@@ -92,13 +92,11 @@ void print_map(){
 }
 char choose(int val,int ch){
     char *alphab="zyxwvutsrqponmlkjihgfedcba";
-    if(val<26){
-        if(ch==1){
+    if(ch==1){
             return alphab[val];}
-        else{
+    else{
             return toupper(alphab[val]);
         }
-    }
 }
 int test_touch(){
 	if(longueur>0){
@@ -111,7 +109,7 @@ int test_touch(){
 	return 0;
 }
 char *set_something_in_map(int y,int x,char val,int ch){
-    printf("elt[%d][%d]=%c mode:%d\n",y,x,map->elt[y][x],ch);
+    //printf("elt[%d][%d]=%c mode:%d\n",y,x,map->elt[y][x],ch);
     if(y==head.y && x==head.x){
     	if(test_touch()==1){
     		map->elt[y][x]='+';
@@ -255,27 +253,27 @@ void move_snake(){
 		snake[longueur-1]=last;
 	}
 	char *info=set_something_in_map(head.y,head.x,head.val,1);
-	printf("head:x %d y%d\ninfo:%s\n",head.x,head.y,info);
+	//printf("head:x %d y%d\ninfo:%s\n",head.x,head.y,info);
 	char *info1;
 	if(longueur>0){
 		for(i=0;i<longueur;i++){
-		printf("neaud %d :x %d y %d\n",i,snake[i].x,snake[i].y);
+		//printf("neaud %d :x %d y %d\n",i,snake[i].x,snake[i].y);
 		info1= set_something_in_map(snake[i].y,snake[i].x,snake[i].val,1);
-		printf("%s\n",info1);
+		//printf("%s\n",info1);
 		}
 	}
 	if(strcmp(info,"perdu!")==0 || strcmp(info,"erreor!")==0){
 		stop=1;
-		printf("%s\n",info);
+		//printf("%s\n",info);
 	};
 }
 
-void main(){
+int main(){
     FILE *fichier=fopen("map.txt","r");
     read_carte(fichier);
    
     if(erreur==1){
-    	return;
+    	return EXIT_FAILURE;
     }
     initialization();
     while(stop==0){
@@ -283,9 +281,9 @@ void main(){
     	printf("\e[H\e[2J");/*vider le terminal*/
     	fruit();
     	move_snake();
-    	printf("fruit_existe: %d longueur:%d stop:%d fruit_x:%d fruit_y:%d \n",fruit_existe,longueur,stop,fruit_x,fruit_y);
+    	//printf("fruit_existe: %d longueur:%d stop:%d fruit_x:%d fruit_y:%d \n",fruit_existe,longueur,stop,fruit_x,fruit_y);
     	print_map();
-    	sleep(2);
+    	sleep(1);
     	if(stop!=0){
     		break;
     	}
@@ -295,4 +293,5 @@ void main(){
     }
       
     free_matrice();
+	return EXIT_SUCCESS;
 }
