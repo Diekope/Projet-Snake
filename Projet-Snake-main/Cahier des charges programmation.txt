@@ -1,0 +1,54 @@
+la carte doit se reafficher a chaque deplacement donc implique une boucle
+lorsque le serpent a mange un fruit ce fruit devient sa tete
+	-voyelle 10 points
+	-consonne 5 points
+Carte de 3 lignes et 6 colonnes
+
+[[",",",",","]
+ [",0,0,0,0,"]
+ [",",",",","]]
+
+Tableau qui contient tout l'alphabet et une variable qui parcourera ce tableau a chaque fruit mange
+Exemple : [z,y,x,...,f,e,d,c,b,a]
+           ^
+	   |
+	variable de parcours
+
+
+
+Vecteur ou structure qui contiendra les coordonnees de la tete du serpent
+
+Construire une liste chainee qui contiendra le serpent
+
+Scoreboard a faire afficher a chaque fois. 
+
+Compteur qui comptera le nombre de deplacement et lorsque celui-ci atteint
+10, le fruit change de position (fruit represente en lettre majuscule)
+
+Lorsque le serpent a mange le bonus la tete prend la valeur du bonus qui sera en minuscule
+avec la fonction "tolower". Dans le cas ou la tete du serpent mange une lettre minuscule donc son corps
+alors c'est perdu.
+
+Boucle qui affiche la carte apres chaque deplacement
+
+Cas de la defaite soit lorsque la tete est sur un "#"
+
+Boucle pour la tete du serpent qui test tant que la case est un "#" sachant
+que l'on doit parcourir de gauche a droite on ne place pas la tete
+
+Pour placer les bonus on doit faire une boucle qui tant que le bonus est place dans
+les "#" on regenere un nouveau bonus dans l'intervalle
+
+Utiliser l'aleatoire pour choisir de placer soit une voyelle soit une consonne.
+
+
+Dans le menu:
+	-choisir de demarrer une nouvelle partie (avec choix de la carte)
+	-Faire une sauvegarde quand on veut avec l'option 's' qui sauvegardera dans un fichier avec le nom du joueur et
+ajouter une option pour quitter pendant la partie. Ajouter une option pour recommencer a 0 la partie,
+charger une nouvelle carte ou sortir du jeu.
+
+
+Bonus:
+	scoreboard comme en systeme d'exploitation avec nom du joueur etc...
+	Interface graphique
