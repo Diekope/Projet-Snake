@@ -15,8 +15,7 @@ Ce projet contient deux versions du jeu classique Snake, développées en C. La 
 ### Version Terminal
 1. Clonez le dépôt : `git clone https://github.com/Diekope/Projet-Snake.git`
 2. Naviguez dans le dossier du projet dans votre terminal. À la fin, votre chemin devrait ressembler à ceci : `Username\cheminVersLesFichiers`.
-3. Compilez le projet pour la version terminal : `gcc -o snake_terminal snake_terminal.c`.
-4. Exécutez le jeu : `./snake_terminal`.
+3. Exécutez le jeu : `./snake_terminal`.
 
 ### Version SDL
 1. Assurez-vous d'avoir installé les bibliothèque SDL, SDL_ttf, SDL_image.
