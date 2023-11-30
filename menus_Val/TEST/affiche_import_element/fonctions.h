@@ -14,6 +14,6 @@ void drawButton(SDL_Renderer* renderer, TTF_Font* font, Button button); // Pour 
 int isMouseOverButton(Button button, int mouseX, int mouseY); // Pour le clic de la souris
 
 int fenetre_acceuil(); // La fenetre d'acceuil
-
+void destroy_window(SDL_Texture* textTexture, TTF_Font* font, SDL_Renderer* renderer, SDL_Window* window);
 int partie();
 #endif // FONCTIONS_H
