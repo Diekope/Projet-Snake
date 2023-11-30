@@ -20,8 +20,8 @@ Ce projet contient deux versions du jeu classique Snake, développées en C. La 
 ### Version SDL
 1. Assurez-vous d'avoir installé les bibliothèque SDL, SDL_ttf, SDL_image.
 2. Si vous ne les avez pas, intallez les
-- **Sur Windows** À l'aide de [Ce tutoriel](https://www.youtube.com/watch?v=riUcuqWeN6w)
-- **Sur MacOS avec VsCode** À l'aide de [Ce tutoriel](https://www.youtube.com/watch?v=Dyz9O7s7B8w)
+- **Sur Windows** À l'aide de [Ce tutoriel pour Windows](https://www.youtube.com/watch?v=riUcuqWeN6w)
+- **Sur MacOS avec VsCode** À l'aide de [Ce tutoriel pour MasOS](https://www.youtube.com/watch?v=Dyz9O7s7B8w)
 4. Exécutez le jeu : `./acceuil`.
 
 ## Utilisation (En développement)
