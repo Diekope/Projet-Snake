@@ -1,10 +1,10 @@
 # Projet Snake en C
 
 ## Description
-Ce projet contient deux versions du jeu classique Snake, développées en C. La première version est conçue pour être exécutée dans un terminal, tandis que la deuxième utilise la bibliothèque SDL pour offrir une interface graphique riche.
+Ce projet contient deux versions du jeu classique Snake, développées en C. La première version est conçue pour être exécutée dans un terminal, tandis que la deuxième utilise la bibliothèque SDL pour offrir une interface graphique. Le projet est actuellement toujours en cours de développement.
 
 ## Fonctionnalités
-- **Version Terminal** : Une version minimaliste du jeu Snake jouable directement dans le terminal.
+- **Version Terminal** : Une version minimaliste du jeu Snake jouable directement dans le terminal. Le serpent est composé d'un lettre de l'alphabet et au fur et à mesure du jeux, l'alphabet se complètre.
 - **Version SDL** : Une version améliorée avec une interface graphique, offrant une expérience de jeu visuelle.
 
 ## Prérequis
@@ -14,23 +14,27 @@ Ce projet contient deux versions du jeu classique Snake, développées en C. La 
 ## Installation
 ### Version Terminal
 1. Clonez le dépôt : `git clone https://github.com/Diekope/Projet-Snake.git`
-2. Naviguez dans le dossier du projet.
-3. Compilez le projet pour la version terminal : `gcc -o snake_terminal snake_terminal.c` (ajustez le nom du fichier source si nécessaire).
+2. Naviguez dans le dossier du projet dans votre terminal. À la fin, votre chemin devrait ressembler à ceci : `Username\cheminVersLesFichiers`.
+3. Compilez le projet pour la version terminal : `gcc -o snake_terminal snake_terminal.c`.
 4. Exécutez le jeu : `./snake_terminal`.
 
 ### Version SDL
-1. Assurez-vous d'avoir installé la bibliothèque SDL.
-2. Suivez les étapes 1 et 2 comme ci-dessus.
-3. Compilez le projet pour la version SDL : `gcc -o snake_sdl snake_sdl.c $(sdl2-config --cflags --libs)` (ajustez les noms de fichiers et les flags selon votre configuration).
-4. Exécutez le jeu : `./snake_sdl`.
+1. Assurez-vous d'avoir installé les bibliothèque SDL, SDL_ttf, SDL_image.
+2. Si vous ne les avez pas, intallez les
+- **Sur Windows** À l'aide de [Ce tutoriel](https://www.youtube.com/watch?v=riUcuqWeN6w)
+- **Sur MacOS avec VsCode** À l'aide de [Ce tutoriel](https://www.youtube.com/watch?v=Dyz9O7s7B8w)
+4. Exécutez le jeu : `./acceuil`.
 
-## Utilisation
+## Utilisation (En développement)
 - Utilisez les touches directionnelles pour déplacer le serpent.
 - Collectez des points et évitez de heurter les murs ou la queue du serpent.
 - Essayez de battre votre meilleur score !
 
-## Contribution
-Les contributions à ce projet sont les bienvenues. Si vous avez des suggestions ou des améliorations, n'hésitez pas à ouvrir une issue ou un pull request.
+## Les Contributeurs et leurs rôles
+- **Benjamin** :
+- **Yuyu** :
+- **Mohan** :
+- **Valentin** :
 
 ## Licence
 [Inclure ici le type de licence si applicable]
