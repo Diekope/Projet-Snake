@@ -7,6 +7,7 @@
 #include <fcntl.h>
 #include "../header/jeu.h"
 #define general "data/general/info.txt"
+/* infovide: louer une espace pour stocker les informations de utilisteur : [nom_user, mdp]*/
 char **infovide(){
 	char **info=(char **)malloc(2 * sizeof(char*)); // Allocation pour deux pointeurs
 	for(int i=0;i<2;i++){
@@ -14,6 +15,7 @@ char **infovide(){
     	}
     	return info;
 }
+/**/
 void libererinfo(char **info){
 	for(int i=0;i<2;i++){
     		free(info[i]);
@@ -84,7 +86,7 @@ Noeud* generation_suivante(carte* terrain,serpent *snake,Noeud* fruit,direction 
 		clear(terrain);
 		Noeud *tete=iemeNoeud(snake,1);
 		int longueur=serpentlongueur(snake);
-		int nouveau_x=tete->x,nouveau_y=tete->y;
+		int nouveau_x=valeurx(tete),nouveau_y=valeurY(tete);
 		switch(d){
 			case droite:
 				nouveau_x++;
@@ -101,33 +103,27 @@ Noeud* generation_suivante(carte* terrain,serpent *snake,Noeud* fruit,direction 
 			default:
 				break;
 		}
-		if(fruit->x==nouveau_x && fruit->y==nouveau_y){
-			printf("fruit:%d %d[\n",fruit->x,fruit->y);
+		if(valeurx(fruit)==nouveau_x && valeurY(fruit)==nouveau_y){
 			for(int i=1;i<=longueur;i++){
 				iemeNoeud(snake,i)->val++;
-				printf("%d ",iemeNoeud(snake,i)->val);
 				ajouter_terrain(terrain,iemeNoeud(snake,i),0);
 
 			}
-			printf("\n");
-			inserer(snake,1,0,fruit->x,fruit->y);
+			inserer(snake,1,0,valeurx(fruit),valeurY(fruit));
 			ajouter_terrain(terrain,iemeNoeud(snake,1),0);
 			*pas=10;
 			libererNoeud(fruit);
 			fruit=generer_fruit(terrain,snake);
 		}
 		else{
-		printf("fruit:%d %d\nlongueur1:%d",fruit->x,fruit->y,longueur);
 			if(longueur>1){
 				for(int i=longueur;i>=2;i--){
-					iemeNoeud(snake,i)->x=iemeNoeud(snake,i-1)->x;
-					iemeNoeud(snake,i)->y=iemeNoeud(snake,i-1)->y;
+					changercoord(iemeNoeud(snake,i),valeurx(iemeNoeud(snake,i-1)),valeurY(iemeNoeud(snake,i-1)));
 					ajouter_terrain(terrain,iemeNoeud(snake,i),0);
 					
 				}
 			}
-			tete->x=nouveau_x;
-			tete->y=nouveau_y;
+			changercoord(tete,nouveau_x,nouveau_y);
 			ajouter_terrain(terrain,fruit,1);
 			ajouter_terrain(terrain,iemeNoeud(snake,1),0);
 			Noeud *test=test_toucher(terrain,snake);
@@ -141,15 +137,15 @@ Noeud* generation_suivante(carte* terrain,serpent *snake,Noeud* fruit,direction 
 	return fruit;
 }
 Noeud* test_toucher(carte *terrain,serpent *snake){
-	int longueur=serpentlongueur(snake);
+	int longueur=serpentlongueur(snake),colonne=nbcolonne(terrain),ligne=nbligne(terrain);
 	Noeud *tete=iemeNoeud(snake,1);
-	if(tete->x==1 || tete->x==terrain->colonne || tete->y==terrain->ligne-1 || tete->y==0){
+	if(valeurx(tete)==1 || valeurx(tete)==colonne || valeurY(tete)==ligne-1 || valeurY(tete)==0){
 		return tete;
 	}
 	if(longueur>1){
 		for(int i=2;i<=longueur;i++){
 			Noeud *corps=iemeNoeud(snake,i);
-			if(corps->x==tete->x && corps->y==tete->y){
+			if(valeurx(corps)==valeurx(tete) && valeurY(corps)==valeurY(tete)){
 				printf("perdu!\n");
 				return corps;
 			}
@@ -160,33 +156,33 @@ Noeud* test_toucher(carte *terrain,serpent *snake){
 	
 }
 void ajouter_terrain(carte* terrain,Noeud *n,int choix){
+	int x=valeurx(n),y=valeurY(n),val=contenu(n);
 	if(choix<2){
-		terrain->elt[n->y][n->x]=alphabet(choix,n->val);
+		ajouterelt(terrain,x,y,alphabet(choix,val));
 	}
 	else{
-		terrain->elt[n->y][n->x]='*';
+		ajouterelt(terrain,x,y,'*');
 	}
 }
 Noeud* generer_fruit(carte *terrain,serpent *snake){
-	int longueur=serpentlongueur(snake);
+	
 	srand(time(NULL));
-		int x=rand()%(terrain->colonne-2)+1,y=rand()%(terrain->ligne-2)+1;
-		while(terrain->elt[y][x]!=' '){
-			x=rand()%(terrain->colonne-2)+1;
-			y=rand()%(terrain->ligne-2)+1;
+	int valeur=rand()%26,ligne=nbligne(terrain),colonne=nbcolonne(terrain);
+	int x=rand()%(colonne-2)+1,y=rand()%(ligne-2)+1;
+	while(valxy(terrain,x,y)!=' '){
+		x=rand()%(colonne-2)+1;
+		y=rand()%(ligne-2)+1;
 		
-		}
-		Noeud *fruit=creerNoeud(longueur-1,x,y,NULL);
-		printf(" x: %d y: %d\n",x,y);
-		ajouter_terrain(terrain,fruit,1);
-		return fruit;
-	return NULL;
+	}
+	Noeud *fruit=creerNoeud(valeur,x,y,NULL);
+	ajouter_terrain(terrain,fruit,1);
+	return fruit;
 	
 }
 Noeud* initialisation(carte *terrain,serpent *snake,direction *d,int *pas){
 	/*cas quitte normal*/
 	*pas=10;
-	int x=terrain->colonne/2,y=terrain->ligne/2;
+	int x=nbcolonne(terrain)/2,y=nbligne(terrain)/2;
 	inserer(snake,1,0,x,y);
 	ajouter_terrain(terrain,iemeNoeud(snake,1),0);
 	Noeud *fruit=generer_fruit(terrain,snake);
@@ -211,10 +207,10 @@ int kbhit(void){
 	return FD_ISSET(STDIN_FILENO,&fds);
 }
 void clear(carte *terrain){
-	int x,y;
-	for(y=1;y<terrain->ligne-1;y++){
-		for(x=2;x<terrain->colonne;x++){
-			terrain->elt[y][x]=' ';
+	int x,y,ligne=nbligne(terrain),colonne=nbcolonne(terrain);
+	for(y=1;y<ligne-1;y++){
+		for(x=2;x<colonne;x++){
+			ajouterelt(terrain,x,y,' ');
 		}
 	}
 }

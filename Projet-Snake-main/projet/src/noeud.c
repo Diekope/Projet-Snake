@@ -36,6 +36,16 @@ Noeud* suivant(Noeud *n){
 int contenu(Noeud *n){
 	return n->val;
 }
+int valeurx(Noeud *n){
+	return n->x;
+}
+int valeurY(Noeud *n){
+	return n->y;
+}
+void changercoord(Noeud* n,int x,int y){
+	n->x=x;
+	n->y=y;
+}
 void changerCont(Noeud *n, int val,int x,int y){
 	n->val=val;
 	n->x=x;

@@ -2,7 +2,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include "../header/carte.h"
-#define path "data/map/map.txt"
+#define path "../data/map/map.txt"
 
 carte* lire_terrain(){
 	int c,l;
@@ -31,6 +31,18 @@ carte* lire_terrain(){
 	}
 	fclose(file);
 	return terrain;
+}
+int nbligne(carte *terrain){
+	return terrain->ligne;
+}
+int nbcolonne(carte *terrain){
+	return terrain->colonne;
+}
+void ajouterelt(carte *terrain,int x,int y,char val){
+	terrain->elt[y][x]=val;
+}
+char valxy(carte *terrain,int x,int y){
+	return terrain->elt[y][x];
 }
 void liberer_terrain(carte *terrain){
 	for(int i=0;i<terrain->ligne;i++){
