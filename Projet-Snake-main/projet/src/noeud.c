@@ -1,7 +1,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include "../header/noeud.h"
-
+/*la meme chose de ce qu'on avait vu en cours juste 2 variables de +*/
 Noeud* creerNoeud(int val,int x,int y, Noeud *n){
 	Noeud *N=(Noeud*)malloc(sizeof(Noeud));
 	if(N==NULL){

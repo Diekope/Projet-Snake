@@ -22,6 +22,7 @@ void libererinfo(char **info){
     	}
     	free(info);
 }
+
 void connexion(int *nb_partie_gagnee, int *nb_partie_gagnee_generale,char **info){
 	FILE *test=fopen(general,"r");
 	if(test==NULL){
@@ -81,18 +82,19 @@ void connexion(int *nb_partie_gagnee, int *nb_partie_gagnee_generale,char **info
 	}
 	fclose(test);
 }
+/*elle genere la generation suivante*/
 Noeud* generation_suivante(carte* terrain,serpent *snake,Noeud* fruit,direction d,int *pas,int *gameover){
-	if(d!=init){
-		clear(terrain);
-		Noeud *tete=iemeNoeud(snake,1);
-		int longueur=serpentlongueur(snake);
-		int nouveau_x=valeurx(tete),nouveau_y=valeurY(tete);
+	if(d!=init){/*si le serpent n'est pas immobile*/
+		clear(terrain);/*effacer tous les elements de la carte*/
+		Noeud *tete=iemeNoeud(snake,1);/*recupere la tête de serpent*/
+		int longueur=serpentlongueur(snake);/*la longueur de serpent*/
+		int nouveau_x=valeurx(tete),nouveau_y=valeurY(tete);/*recupere les cordonnees de la tete*/
 		switch(d){
-			case droite:
-				nouveau_x++;
+			case droite:/*si va droite*/
+				nouveau_x++;/*(x++,y)*/
 				break;
-			case gauche:
-				nouveau_x--;
+			case gauche:/*si va gauche*/
+				nouveau_x--;/*(x--,y)*/
 				break;
 			case haute:
 				nouveau_y--;
@@ -103,78 +105,89 @@ Noeud* generation_suivante(carte* terrain,serpent *snake,Noeud* fruit,direction 
 			default:
 				break;
 		}
+		/*recupere x,y de fruit: si les nouvelles cordonnees de la tete=les cordonnees de fruit*/
 		if(valeurx(fruit)==nouveau_x && valeurY(fruit)==nouveau_y){
-			for(int i=1;i<=longueur;i++){
+			for(int i=1;i<=longueur;i++){/*la valeur de chaque noeud +1*/
 				iemeNoeud(snake,i)->val++;
-				ajouter_terrain(terrain,iemeNoeud(snake,i),0);
+				ajouter_terrain(terrain,iemeNoeud(snake,i),0);/*on dessine ce noeud dans la carte*/
 
 			}
-			inserer(snake,1,0,valeurx(fruit),valeurY(fruit));
-			ajouter_terrain(terrain,iemeNoeud(snake,1),0);
-			*pas=10;
-			libererNoeud(fruit);
-			fruit=generer_fruit(terrain,snake);
+			inserer(snake,1,0,valeurx(fruit),valeurY(fruit));/*on insere la nouvelle tete*/
+			ajouter_terrain(terrain,iemeNoeud(snake,1),0);/*on dessine la tete*/
+			*pas=10;/*reinitialise le pas*/
+			libererNoeud(fruit);/*libere espace*/
+			fruit=generer_fruit(terrain,snake);/*generer un nouveau*/
 		}
 		else{
-			if(longueur>1){
+			/*cas normal*/
+			if(longueur>1){/*si la taille de serpent >1*/
+			/*de queue à 2eme noeud : les cordonnees i = les cordonnées de noeud i-1*/
 				for(int i=longueur;i>=2;i--){
 					changercoord(iemeNoeud(snake,i),valeurx(iemeNoeud(snake,i-1)),valeurY(iemeNoeud(snake,i-1)));
-					ajouter_terrain(terrain,iemeNoeud(snake,i),0);
+					ajouter_terrain(terrain,iemeNoeud(snake,i),0);/*dessine dans la carte*/
 					
 				}
 			}
+			/*on change les cordonnees de la tete*/
 			changercoord(tete,nouveau_x,nouveau_y);
+			/*on redessine le fruit et la tete*/
 			ajouter_terrain(terrain,fruit,1);
 			ajouter_terrain(terrain,iemeNoeud(snake,1),0);
-			Noeud *test=test_toucher(terrain,snake);
-			if(test!=NULL){
-				ajouter_terrain(terrain,test,3);
-				*gameover=1;
+			Noeud *test=test_toucher(terrain,snake);/*test si la tete a touche le mur ou son corps*/
+			if(test!=NULL){/*si la test retourne pas nulle*/
+				ajouter_terrain(terrain,test,3);/*alors on change intersection en * */
+				*gameover=1;/*jeu arrete*/
 			}
 		}
 		
 	}
-	return fruit;
+	return fruit;/*retourne le fruit*/
 }
+/*test si la tete as touche le corps ou le mur*/
 Noeud* test_toucher(carte *terrain,serpent *snake){
 	int longueur=serpentlongueur(snake),colonne=nbcolonne(terrain),ligne=nbligne(terrain);
 	Noeud *tete=iemeNoeud(snake,1);
+	/*si la tete touche le mur*/
 	if(valeurx(tete)==1 || valeurx(tete)==colonne || valeurY(tete)==ligne-1 || valeurY(tete)==0){
-		return tete;
+		return tete;/*on retourne la tete*/
 	}
-	if(longueur>1){
-		for(int i=2;i<=longueur;i++){
-			Noeud *corps=iemeNoeud(snake,i);
+	if(longueur>1){/*si la taille de serpent >1*/
+		for(int i=2;i<=longueur;i++){/*on parcours le serpent*/
+			Noeud *corps=iemeNoeud(snake,i);/*on recupere ieme noeud*/
+			/*si ses cordonnees = les cordonnees de la tete*/
 			if(valeurx(corps)==valeurx(tete) && valeurY(corps)==valeurY(tete)){
 				printf("perdu!\n");
-				return corps;
+				return corps;/*retourne le corps*/
 			}
 			
 		}
 	}
-	return NULL;
+	return NULL;/*si pas touche alors NULL*/
 	
 }
 void ajouter_terrain(carte* terrain,Noeud *n,int choix){
 	int x=valeurx(n),y=valeurY(n),val=contenu(n);
 	if(choix<2){
-		ajouterelt(terrain,x,y,alphabet(choix,val));
+		ajouterelt(terrain,x,y,alphabet(choix,val));/*ajoute le noeud dans le terrain, si choix =0 alors c'est un noeud de serpent sinon fruit*/
 	}
 	else{
-		ajouterelt(terrain,x,y,'*');
+		ajouterelt(terrain,x,y,'*');/*sinon ajoute * */
 	}
 }
 Noeud* generer_fruit(carte *terrain,serpent *snake){
-	
+	/*genere fruit*/
 	srand(time(NULL));
 	int valeur=rand()%26,ligne=nbligne(terrain),colonne=nbcolonne(terrain);
 	int x=rand()%(colonne-2)+1,y=rand()%(ligne-2)+1;
+	/*tant que la position (x,y) n'est pas vide */
 	while(valxy(terrain,x,y)!=' '){
 		x=rand()%(colonne-2)+1;
 		y=rand()%(ligne-2)+1;
 		
 	}
+	/*cree le noeud fruit*/
 	Noeud *fruit=creerNoeud(valeur,x,y,NULL);
+	/*dessine dans le terrain*/
 	ajouter_terrain(terrain,fruit,1);
 	return fruit;
 	
@@ -191,11 +204,12 @@ Noeud* initialisation(carte *terrain,serpent *snake,direction *d,int *pas){
 }
 char alphabet(int choix, int val){
 	char *alphab="ZYXWVUTSRQPONMLKJIHGFEDCBA";
-	if(choix==0){
+	if(choix==0){/*choix 0 alors minuscule*/
 		return tolower(alphab[val%26]);
 	}
-	return alphab[val%26];
+	return alphab[val%26];/*majuscule*/
 }
+/*test si l'utilisateur as fait de saisit ou non dans le terminal*/
 int kbhit(void){
 	struct timeval intervalle_t;
 	fd_set fds;
@@ -206,6 +220,7 @@ int kbhit(void){
 	select(STDIN_FILENO+1,&fds,NULL,NULL,&intervalle_t);
 	return FD_ISSET(STDIN_FILENO,&fds);
 }
+/*efface tous t=sauf les murs*/
 void clear(carte *terrain){
 	int x,y,ligne=nbligne(terrain),colonne=nbcolonne(terrain);
 	for(y=1;y<ligne-1;y++){
@@ -214,8 +229,10 @@ void clear(carte *terrain){
 		}
 	}
 }
+/*recupere le valeur saisit par l'utilisateur*/
 void choisir_direction(direction *d,int *gameover){
 	char choix=getchar();
+	/*si pas de contre sens*/
 	if(!((choix=='o' && *d==2) || (choix =='l' && *d==1) ||(choix=='m' && *d==3) ||(choix=='k' && *d==4))){
 		switch(choix){
 			case 'o':

@@ -1,7 +1,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include "../header/liste.h"
-
+/*cree un serpent vide*/
 serpent* serpentvide(){
 	serpent *l=(serpent *)malloc(sizeof(serpent));
 	l->sentAvt=creerSent();
@@ -9,6 +9,7 @@ serpent* serpentvide(){
 	changerSuiv(l->sentAvt,l->sentArr);
 	return l;
 };
+/*libere le serpent*/
 void libererserpent(serpent *l){
 	Noeud *n=l->sentAvt;
 	while(n!=NULL){
@@ -18,9 +19,11 @@ void libererserpent(serpent *l){
 	}
 	free(l);
 }
+/*test si le serpent est vide*/
 int estserpentvide(serpent *l){
 	return(suivant(l->sentAvt)==l->sentArr);
 }
+/*retourne ieme noeud*/
 Noeud* iemeNoeud(serpent *l,int i){
 	int j=0;
 	Noeud *resultat;
@@ -31,14 +34,17 @@ Noeud* iemeNoeud(serpent *l,int i){
 	}
 	return resultat;
 }
+/*retourne la valeur de i eme noeud*/
 int iemeElt(serpent *l,int i){
 	return contenu(iemeNoeud(l,i));
 }
+/*insere un noeud à la ieme position*/
 void inserer(serpent *l,int i, int val,int x,int y){
 	Noeud *prec=iemeNoeud(l,i-1);
 	Noeud *n =creerNoeud(val,x,y,suivant(prec));
 	changerSuiv(prec,n);
 }
+/*affiche le contenu de serpent*/
 void afficherserpent(serpent *l){
 	if(l!=NULL){
 		Noeud *actuel=l->sentAvt;

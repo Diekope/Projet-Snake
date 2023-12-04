@@ -3,7 +3,7 @@
 #include <string.h>
 #include "../header/carte.h"
 #define path "../data/map/map.txt"
-
+/*lire le terrain dans un fichier*/
 carte* lire_terrain(){
 	int c,l;
 	char cara;
@@ -32,18 +32,23 @@ carte* lire_terrain(){
 	fclose(file);
 	return terrain;
 }
+/*retourne nb de ligne*/
 int nbligne(carte *terrain){
 	return terrain->ligne;
 }
+/*retourne nb de colonne*/
 int nbcolonne(carte *terrain){
 	return terrain->colonne;
 }
+/*ajoute un element dans le terrain*/
 void ajouterelt(carte *terrain,int x,int y,char val){
 	terrain->elt[y][x]=val;
 }
+/*retourne la valeur qui se trouve dans cette position*/
 char valxy(carte *terrain,int x,int y){
 	return terrain->elt[y][x];
 }
+/*libere la structure*/
 void liberer_terrain(carte *terrain){
 	for(int i=0;i<terrain->ligne;i++){
 		free(terrain->elt[i]);
@@ -51,6 +56,7 @@ void liberer_terrain(carte *terrain){
 	free(terrain->elt);
 	free(terrain);
 }
+/*affiche la struture*/
 void afficher_terrain(carte *terrain){
 	int i,j;
 	for(i=0;i<terrain->ligne;i++){
