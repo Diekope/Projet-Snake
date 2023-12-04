@@ -134,8 +134,8 @@ int fenetre_acceuil(){
     // ===Le_Texte===
     // ==============
     // ===On_importe_la_police===
-    TTF_Font* font = TTF_OpenFont("/Users/ValQuiTravaille/Desktop/Université/L2/Programmation/Projet Snake/git/Projet-Snake/menus_Val/TEST/affiche_elements/Fonts/Arial Unicode.ttf", 100); // L'int à la fin est sa taille
-    TTF_Font* font2 = TTF_OpenFont("/Users/ValQuiTravaille/Desktop/Université/L2/Programmation/Projet Snake/git/Projet-Snake/menus_Val/TEST/affiche_elements/Fonts/Arial Unicode.ttf", 20); // L'int à la fin est sa taille
+    TTF_Font* font = TTF_OpenFont("/Users/ValQuiTravaille/Desktop/Université/L2/Programmation/Projet Snake/snek/git/Projet-Snake/menus_Val/Menu/Fonts/stocky.ttf", 100); // L'int à la fin est sa taille
+    TTF_Font* font2 = TTF_OpenFont("/Users/ValQuiTravaille/Desktop/Université/L2/Programmation/Projet Snake/snek/git/Projet-Snake/menus_Val/Menu/Fonts/04B_30__.TTF", 20); // L'int à la fin est sa taille
 
     // ===Gestion_des_erreurs===
     if (!font) {
@@ -287,8 +287,8 @@ int partie(){
     // ===Le_Texte===
     // ==============
     // ===On_importe_la_police===
-    TTF_Font* font = TTF_OpenFont("/Users/ValQuiTravaille/Desktop/Université/L2/Programmation/Projet Snake/git/Projet-Snake/menus_Val/TEST/affiche_elements/Fonts/Arial Unicode.ttf", 100); // L'int à la fin est sa taille
-    TTF_Font* font2 = TTF_OpenFont("/Users/ValQuiTravaille/Desktop/Université/L2/Programmation/Projet Snake/git/Projet-Snake/menus_Val/TEST/affiche_elements/Fonts/Arial Unicode.ttf", 20); // L'int à la fin est sa taille
+    TTF_Font* font = TTF_OpenFont("/Users/ValQuiTravaille/Desktop/Université/L2/Programmation/Projet Snake/snek/git/Projet-Snake/menus_Val/Menu/Fonts/stocky.ttf", 100); // L'int à la fin est sa taille
+    TTF_Font* font2 = TTF_OpenFont("/Users/ValQuiTravaille/Desktop/Université/L2/Programmation/Projet Snake/snek/git/Projet-Snake/menus_Val/Menu/Fonts/04B_30__.TTF", 13); // L'int à la fin est sa taille
 
     // ===Gestion_des_erreurs===
     if (!font) {
@@ -449,8 +449,8 @@ int nMap(){
     // ===Le_Texte===
     // ==============
     // ===On_importe_la_police===
-    TTF_Font* font = TTF_OpenFont("/Users/ValQuiTravaille/Desktop/Université/L2/Programmation/Projet Snake/git/Projet-Snake/menus_Val/TEST/affiche_elements/Fonts/Arial Unicode.ttf", 100); // L'int à la fin est sa taille
-    TTF_Font* font2 = TTF_OpenFont("/Users/ValQuiTravaille/Desktop/Université/L2/Programmation/Projet Snake/git/Projet-Snake/menus_Val/TEST/affiche_elements/Fonts/Arial Unicode.ttf", 20); // L'int à la fin est sa taille
+    TTF_Font* font = TTF_OpenFont("/Users/ValQuiTravaille/Desktop/Université/L2/Programmation/Projet Snake/snek/git/Projet-Snake/menus_Val/Menu/Fonts/stocky.ttf", 100); // L'int à la fin est sa taille
+    TTF_Font* font2 = TTF_OpenFont("/Users/ValQuiTravaille/Desktop/Université/L2/Programmation/Projet Snake/snek/git/Projet-Snake/menus_Val/Menu/Fonts/04B_30__.TTF", 20); // L'int à la fin est sa taille
 
     // ===Gestion_des_erreurs===
     if (!font) {
