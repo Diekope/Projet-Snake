@@ -570,3 +570,39 @@ int nMap(){
 }
 
 
+
+
+
+
+SDL_Window* CreateWindow(const char* title, int width, int height) {
+    if (SDL_Init(SDL_INIT_VIDEO) < 0) {
+        SDL_Log("Unable to initialize SDL: %s", SDL_GetError());
+        return NULL;
+    }
+
+    SDL_Window* window = SDL_CreateWindow(title,
+                                          SDL_WINDOWPOS_CENTERED,
+                                          SDL_WINDOWPOS_CENTERED,
+                                          width, height,
+                                          SDL_WINDOW_SHOWN);
+
+    if (!window) {
+        SDL_Log("Unable to create window: %s", SDL_GetError());
+        SDL_Quit();
+        return NULL;
+    }
+    SDL_Event e;
+    int quit = 1;
+    while (quit != 0) {
+        while (SDL_PollEvent(&e) != 0) {
+            if (e.type == SDL_QUIT) {
+                quit = 0;
+            }
+            // Autres gestionnaires d'événements ici
+        }
+        // Mise à jour de la logique du jeu et du rendu ici
+    }
+
+
+    return window;
+}
