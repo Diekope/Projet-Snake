@@ -5,23 +5,23 @@ TTF_LDFLAGS := -lSDL2_ttf
 
 # Exécutables cibles
 TARGET1 := acceuil
-#TARGET2 := game
+TARGET2 := game
 
 
 # Fichiers source
 SRC1 := acceuil.c fonctions.c
-#SRC2 := game.c fonctions.c
+SRC2 := game.c fonctions.c
 
 
-all: $(TARGET1) #$(TARGET2)
+all: $(TARGET1) $(TARGET2)
 
 $(TARGET1): $(SRC1)
 	$(CC) $(CFLAGS) $(SRC1) $(LDFLAGS) $(TTF_LDFLAGS) -o $(TARGET1)
 
-#$(TARGET2): $(SRC2)
-#	$(CC) $(CFLAGS) $(SRC2) $(LDFLAGS) $(TTF_LDFLAGS) -o $(TARGET2)
+$(TARGET2): $(SRC2)
+	$(CC) $(CFLAGS) $(SRC2) $(LDFLAGS) $(TTF_LDFLAGS) -o $(TARGET2)
 
 clean:
-	rm -f $(TARGET1)
+	rm -f $(TARGET1) $(TARGET2)
 
 .PHONY: all clean
