@@ -17,7 +17,15 @@ typedef struct {
     SDL_Rect rect;          // Position et dimensions de l'image de la carte
     SDL_Texture* image;     // Texture pour l'image de la carte
     const char* description; // Description de la carte
+    int largeur;
+    int hauteur;
 } Card;
+
+// ===Pour_les_fenetres_de_jeux===
+typedef struct {
+    int x;  // Largeur de la fenêtre
+    int y;  // Hauteur de la fenêtre
+} GridSquare;
 
 
 void drawButton(SDL_Renderer* renderer, TTF_Font* font, Button button); // Pour les boutons, on ne peut pas définir leur position dessus
@@ -32,5 +40,6 @@ int partie();
 int nMap();
 
 SDL_Window* CreateWindow(const char* title, int width, int height);
+int gameWindow(int lg, int ht);
 
 #endif // FONCTIONS_H
