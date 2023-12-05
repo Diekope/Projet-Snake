@@ -5,6 +5,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <unistd.h>
+#include <stdbool.h>
 
 // =============================
 // ===On détruit les fenêtres===
@@ -61,7 +62,7 @@ int isMouseOverButton(Button button, int mouseX, int mouseY) {
 void loadAndDisplayCards(SDL_Renderer* renderer, TTF_Font* font, Card* cards, int numCards) {
     for (int i = 0; i < numCards; i++) {
         // Chargement de l'image dans la texture
-        cards[i].image = IMG_LoadTexture(renderer, "/Users/ValQuiTravaille/Desktop/Université/L2/Programmation/Projet Snake/git/Projet-Snake/menus_Val/TEST/affiche_import_element/Snake.png");
+        cards[i].image = IMG_LoadTexture(renderer, "/Users/ValQuiTravaille/Desktop/Université/L2/Programmation/Projet Snake/snek/git/Projet-Snake/menus_Val/Menu/Images/Snake.png");
 
         // Affichage de l'image
         SDL_RenderCopy(renderer, cards[i].image, NULL, &cards[i].rect);
@@ -79,6 +80,7 @@ void loadAndDisplayCards(SDL_Renderer* renderer, TTF_Font* font, Card* cards, in
         SDL_DestroyTexture(textTexture);
     }
 }
+
 // ===Pour_les_effacer===
 void cleanUpCards(Card* cards, int numCards) {
     for (int i = 0; i < numCards; i++) {
@@ -134,8 +136,8 @@ int fenetre_acceuil(){
     // ===Le_Texte===
     // ==============
     // ===On_importe_la_police===
-    TTF_Font* font = TTF_OpenFont("/Users/ValQuiTravaille/Desktop/Université/L2/Programmation/Projet Snake/snek/git/Projet-Snake/menus_Val/Menu/Fonts/stocky.ttf", 100); // L'int à la fin est sa taille
-    TTF_Font* font2 = TTF_OpenFont("/Users/ValQuiTravaille/Desktop/Université/L2/Programmation/Projet Snake/snek/git/Projet-Snake/menus_Val/Menu/Fonts/04B_30__.TTF", 20); // L'int à la fin est sa taille
+    TTF_Font* font = TTF_OpenFont("Fonts/stocky.ttf", 100); // L'int à la fin est sa taille
+    TTF_Font* font2 = TTF_OpenFont("Fonts/04B_30__.TTF", 20); // L'int à la fin est sa taille
 
     // ===Gestion_des_erreurs===
     if (!font) {
@@ -287,8 +289,8 @@ int partie(){
     // ===Le_Texte===
     // ==============
     // ===On_importe_la_police===
-    TTF_Font* font = TTF_OpenFont("/Users/ValQuiTravaille/Desktop/Université/L2/Programmation/Projet Snake/snek/git/Projet-Snake/menus_Val/Menu/Fonts/stocky.ttf", 100); // L'int à la fin est sa taille
-    TTF_Font* font2 = TTF_OpenFont("/Users/ValQuiTravaille/Desktop/Université/L2/Programmation/Projet Snake/snek/git/Projet-Snake/menus_Val/Menu/Fonts/04B_30__.TTF", 13); // L'int à la fin est sa taille
+    TTF_Font* font = TTF_OpenFont("Fonts/stocky.ttf", 100); // L'int à la fin est sa taille
+    TTF_Font* font2 = TTF_OpenFont("Fonts/04B_30__.TTF", 13); // L'int à la fin est sa taille
 
     // ===Gestion_des_erreurs===
     if (!font) {
@@ -449,8 +451,8 @@ int nMap(){
     // ===Le_Texte===
     // ==============
     // ===On_importe_la_police===
-    TTF_Font* font = TTF_OpenFont("/Users/ValQuiTravaille/Desktop/Université/L2/Programmation/Projet Snake/snek/git/Projet-Snake/menus_Val/Menu/Fonts/stocky.ttf", 100); // L'int à la fin est sa taille
-    TTF_Font* font2 = TTF_OpenFont("/Users/ValQuiTravaille/Desktop/Université/L2/Programmation/Projet Snake/snek/git/Projet-Snake/menus_Val/Menu/Fonts/04B_30__.TTF", 20); // L'int à la fin est sa taille
+    TTF_Font* font = TTF_OpenFont("Fonts/stocky.ttf", 100); // L'int à la fin est sa taille
+    TTF_Font* font2 = TTF_OpenFont("Fonts/04B_30__.TTF", 20); // L'int à la fin est sa taille
 
     // ===Gestion_des_erreurs===
     if (!font) {
@@ -515,12 +517,12 @@ int nMap(){
     // ===Le_nombre_de_Cartes===
     const int numCards = 6;
     Card cards[numCards] = {
-        {{50, 150, 110, 110}, NULL, "Map 1"}, // {Axe y, Axe x, Largeur, longueur}
-        {{330, 150, 110, 110}, NULL, "Map 2"},
-        {{620, 150, 110, 110}, NULL, "Map 3"},
-        {{50, 300, 110, 110}, NULL, "Map 4"},
-        {{330, 300, 110, 110}, NULL, "Map 5"},
-        {{620, 300, 110, 110}, NULL, "Map 6"}
+        {{50, 150, 110, 110}, NULL, "Map 1", 10, 5}, // {Axe y, Axe x, Largeur, longueur}
+        {{330, 150, 110, 110}, NULL, "Map 2", 15, 9},
+        {{620, 150, 110, 110}, NULL, "Map 3", 20, 13},
+        {{50, 300, 110, 110}, NULL, "Map 4", 25, 15},
+        {{330, 300, 110, 110}, NULL, "Map 5", 30, 19},
+        {{620, 300, 110, 110}, NULL, "Map 6", 35, 23}
     };
 
     while (running) {
@@ -540,6 +542,7 @@ int nMap(){
                         y >= cards[i].rect.y && y <= (cards[i].rect.y + cards[i].rect.h)) {
                         // Action lorsque la carte est cliquée
                         printf("Carte %d cliquée : %s\n", i, cards[i].description);
+                        gameWindow(cards[i].largeur, cards[i].hauteur);
                         break; // Sortir de la boucle si une carte a été cliquée
                     }
                 }
@@ -571,6 +574,101 @@ int nMap(){
 
 
 
+
+
+
+
+
+
+int gameWindow(int lg, int ht) {
+    const int GRID_SIZE = 35;
+    const int WINDOW_WIDTH = lg * GRID_SIZE;
+    const int WINDOW_HEIGHT = ht * GRID_SIZE;
+
+    if (SDL_Init(SDL_INIT_VIDEO) < 0) {
+        printf("Erreur d'initialisation de SDL: %s\n", SDL_GetError());
+        return -1;
+    }
+
+    SDL_Window *window = SDL_CreateWindow("Snake de la diversité - Game", SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, WINDOW_WIDTH, WINDOW_HEIGHT, 0);
+    if (!window) {
+        SDL_Quit();
+        return -1;
+    }
+
+    SDL_Renderer *renderer = SDL_CreateRenderer(window, -1, SDL_RENDERER_ACCELERATED);
+    if (!renderer) {
+        SDL_DestroyWindow(window);
+        SDL_Quit();
+        return -1;
+    }
+
+    if (!(IMG_Init(IMG_INIT_PNG) & IMG_INIT_PNG)) {
+        printf("Erreur d'initialisation de SDL_image: %s\n", IMG_GetError());
+        SDL_DestroyRenderer(renderer);
+        SDL_DestroyWindow(window);
+        SDL_Quit();
+        return -1;
+    }
+
+    SDL_Surface *loadedSurface = IMG_Load("Images/Japon Cool +++.png");
+    if (!loadedSurface) {
+        printf("Erreur de chargement de l'image: %s\n", IMG_GetError());
+        SDL_DestroyRenderer(renderer);
+        SDL_DestroyWindow(window);
+        IMG_Quit();
+        SDL_Quit();
+        return -1;
+    }
+
+    SDL_Texture *backgroundTexture = SDL_CreateTextureFromSurface(renderer, loadedSurface);
+    SDL_FreeSurface(loadedSurface);
+    if (!backgroundTexture) {
+        printf("Erreur de création de la texture: %s\n", SDL_GetError());
+        SDL_DestroyRenderer(renderer);
+        SDL_DestroyWindow(window);
+        IMG_Quit();
+        SDL_Quit();
+        return -1;
+    }
+
+    GridSquare square = {((WINDOW_WIDTH / 2) / GRID_SIZE) * GRID_SIZE, ((WINDOW_HEIGHT / 2) / GRID_SIZE) * GRID_SIZE};
+    SDL_Event e;
+    int quit = 0;
+
+    while (!quit) {
+        while (SDL_PollEvent(&e)) {
+            if (e.type == SDL_QUIT) {
+                quit = 1;
+            } else if (e.type == SDL_KEYDOWN) {
+                switch (e.key.keysym.sym) {
+                    case SDLK_UP:    square.y -= GRID_SIZE; break;
+                    case SDLK_DOWN:  square.y += GRID_SIZE; break;
+                    case SDLK_LEFT:  square.x -= GRID_SIZE; break;
+                    case SDLK_RIGHT: square.x += GRID_SIZE; break;
+                    case SDLK_SPACE: quit = 1; break;
+                }
+
+                square.x = (square.x < 0) ? 0 : (square.x >= WINDOW_WIDTH) ? WINDOW_WIDTH - GRID_SIZE : square.x;
+                square.y = (square.y < 0) ? 0 : (square.y >= WINDOW_HEIGHT) ? WINDOW_HEIGHT - GRID_SIZE : square.y;
+            }
+        }
+
+        SDL_RenderClear(renderer);
+        SDL_RenderCopy(renderer, backgroundTexture, NULL, NULL);
+        SDL_Rect squareRect = {square.x, square.y, GRID_SIZE, GRID_SIZE};
+        SDL_SetRenderDrawColor(renderer, 255, 0, 0, 255); // Rouge
+        SDL_RenderFillRect(renderer, &squareRect);
+        SDL_RenderPresent(renderer);
+    }
+
+    SDL_DestroyTexture(backgroundTexture);
+    SDL_DestroyRenderer(renderer);
+    SDL_DestroyWindow(window);
+    IMG_Quit();
+    SDL_Quit();
+    return 0;
+}
 
 
 
