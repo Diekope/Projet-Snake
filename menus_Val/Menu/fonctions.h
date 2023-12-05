@@ -31,4 +31,6 @@ void destroy_window(SDL_Texture* textTexture, TTF_Font* font, SDL_Renderer* rend
 int partie();
 int nMap();
 
+SDL_Window* CreateWindow(const char* title, int width, int height);
+
 #endif // FONCTIONS_H
