@@ -646,7 +646,7 @@ int gameWindow(int lg, int ht) {
                     case SDLK_DOWN:  square.y += GRID_SIZE; break;
                     case SDLK_LEFT:  square.x -= GRID_SIZE; break;
                     case SDLK_RIGHT: square.x += GRID_SIZE; break;
-                    case SDLK_SPACE: quit = 1; break;
+                    case SDLK_q: quit = 1; SDL_DestroyTexture(backgroundTexture); SDL_DestroyRenderer(renderer); SDL_DestroyWindow(window); IMG_Quit(); SDL_Quit(); nMap(); break;
                 }
 
                 square.x = (square.x < 0) ? 0 : (square.x >= WINDOW_WIDTH) ? WINDOW_WIDTH - GRID_SIZE : square.x;
