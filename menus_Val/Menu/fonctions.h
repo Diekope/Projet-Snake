@@ -1,4 +1,4 @@
-// button.h
+// fonctions.h
 #ifndef FONCTIONS_H
 #define FONCTIONS_H
 
