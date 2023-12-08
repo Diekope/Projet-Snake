@@ -127,6 +127,9 @@ int gameWindow(int lg, int ht) {
     
     int newPos = 0;
 
+    int newX;
+    int newY;
+
     // ===Gestion_des_évenements===
     while (!quit) {
         // ===Pour_quitter===
@@ -151,12 +154,28 @@ int gameWindow(int lg, int ht) {
         if (moveCounter++ >= moveInterval) {
             moveCounter = 0;
             lastDir = dir; // Pour que l'on sache quelle était la dernière touche directionnelle
+            
+            int newX = square.x;
+            int newY = square.y;
+
             switch (dir) {
-                case UP:    square.y -= GRID_SIZE; break;
-                case DOWN:  square.y += GRID_SIZE; break;
-                case LEFT:  square.x -= GRID_SIZE; break;
-                case RIGHT: square.x += GRID_SIZE; break;
+                case UP:    square.y -= GRID_SIZE; newY -= GRID_SIZE; break;
+                case DOWN:  square.y += GRID_SIZE; newY += GRID_SIZE; break;
+                case LEFT:  square.x -= GRID_SIZE; newX -= GRID_SIZE; break;
+                case RIGHT: square.x += GRID_SIZE; newX += GRID_SIZE; break;
                 case STOP:  break;
+            }
+            // Check if the new position is outside the window
+            if (newX < 0 || newX >= WINDOW_WIDTH || newY < 0 || newY >= WINDOW_HEIGHT) {
+                printf("The square is trying to leave the window!\n");
+                quit = 1;
+                SDL_DestroyTexture(backgroundTexture);
+                SDL_DestroyRenderer(renderer);
+                SDL_DestroyWindow(window);
+                IMG_Quit();
+                SDL_Quit();
+                nMap();
+                break;
             }
         }
 
