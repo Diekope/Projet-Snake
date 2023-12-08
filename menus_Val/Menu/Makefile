@@ -9,19 +9,19 @@ TARGET2 := game
 
 
 # Fichiers source
-SRC1 := acceuil.c fonctions.c
+SRC1 := acceuil.c Windows/window.c Game/game.c
 SRC2 := game.c fonctions.c
 
 
-all: $(TARGET1) $(TARGET2)
+all: $(TARGET1) #$(TARGET2)
 
 $(TARGET1): $(SRC1)
 	$(CC) $(CFLAGS) $(SRC1) $(LDFLAGS) $(TTF_LDFLAGS) -o $(TARGET1)
 
-$(TARGET2): $(SRC2)
-	$(CC) $(CFLAGS) $(SRC2) $(LDFLAGS) $(TTF_LDFLAGS) -o $(TARGET2)
+#$(TARGET2): $(SRC2)
+#	$(CC) $(CFLAGS) $(SRC2) $(LDFLAGS) $(TTF_LDFLAGS) -o $(TARGET2)
 
 clean:
-	rm -f $(TARGET1) $(TARGET2)
+	rm -f $(TARGET1)
 
 .PHONY: all clean

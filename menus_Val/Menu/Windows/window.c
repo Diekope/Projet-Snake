@@ -1,21 +1,67 @@
 #include <SDL.h>
 #include <SDL_image.h>
 #include <SDL_ttf.h>
-#include "fonctions.h"
+#include "window.h"
+#include "../Game/game.h"
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <unistd.h>
-#include <stdbool.h>
+
+
+// ==================================
+// ===Initialisation des fenêtres===
+// ==================================
+int initializeWindow(const char* title, int width, int height, SDL_Window** outWindow, SDL_Renderer** outRenderer) {
+    if (SDL_Init(SDL_INIT_VIDEO) < 0) {
+        // ===Erreur_initialisation_SDL===
+        printf("Erreur lors de l'initialisation de SDL: %s\n", SDL_GetError());
+        return -1;
+    }
+
+    *outWindow = SDL_CreateWindow(title, SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED, width, height, SDL_WINDOW_SHOWN);
+    if (*outWindow == NULL) {
+        // ===Erreur_création_fenêtre===
+        printf("Erreur lors de la création de la fenêtre: %s\n", SDL_GetError());
+        SDL_Quit();
+        return -1;
+    }
+
+    *outRenderer = SDL_CreateRenderer(*outWindow, -1, SDL_RENDERER_ACCELERATED);
+    if (*outRenderer == NULL) {
+        // ===Erreur_création_rendu===
+        printf("Erreur lors de la création du rendu: %s\n", SDL_GetError());
+        SDL_DestroyWindow(*outWindow);
+        SDL_Quit();
+        return -1;
+    }
+
+    if (TTF_Init() != 0) {
+        fprintf(stderr, "Erreur lors de l'initialisation de SDL_ttf : %s\n", TTF_GetError());
+        SDL_Quit();
+        return -1;
+    }
+
+    return 0; // Succès
+}
 
 // =============================
 // ===On détruit les fenêtres===
 // =============================
-void destroy_window(SDL_Texture* textTexture, TTF_Font* font, SDL_Renderer* renderer, SDL_Window* window){
+void destroy_window(SDL_Texture* textTexture, TTF_Font* font, SDL_Renderer* renderer, SDL_Window* window) {
     // ===Quand_c'est_fini,_on_détruit_tout===
-    SDL_DestroyTexture(textTexture); // Libère la texture
-    TTF_CloseFont(font); // Ferme la police
-    SDL_DestroyRenderer(renderer); // On arrête le rendu
-    SDL_DestroyWindow(window); // On ferme la fenêtre
+    if (textTexture != NULL) {
+        SDL_DestroyTexture(textTexture); // Libère la texture
+    }
+    if (font != NULL) {
+        TTF_CloseFont(font); // Ferme la police
+    }
+    if (renderer != NULL) {
+        SDL_DestroyRenderer(renderer); // On arrête le rendu
+    }
+    if (window != NULL) {
+        SDL_DestroyWindow(window); // On ferme la fenêtre
+    }
     TTF_Quit();
     SDL_Quit();
 }
@@ -48,6 +94,7 @@ void drawButton(SDL_Renderer* renderer, TTF_Font* font2, Button button) {
     SDL_FreeSurface(textSurface);
     SDL_DestroyTexture(textTexture);
 }
+
 // ===Pour_le_clic_de_la_souris===
 int isMouseOverButton(Button button, int mouseX, int mouseY) {
     return (mouseX > button.rect.x &&
@@ -61,13 +108,13 @@ int isMouseOverButton(Button button, int mouseX, int mouseY) {
 // ================
 void loadAndDisplayCards(SDL_Renderer* renderer, TTF_Font* font, Card* cards, int numCards) {
     for (int i = 0; i < numCards; i++) {
-        // Chargement de l'image dans la texture
-        cards[i].image = IMG_LoadTexture(renderer, "/Users/ValQuiTravaille/Desktop/Université/L2/Programmation/Projet Snake/snek/git/Projet-Snake/menus_Val/Menu/Images/Snake.png");
+        // ===Chargement_de_l'image_dans_la_texture===
+        cards[i].image = IMG_LoadTexture(renderer, "Images/Snake.png");
 
-        // Affichage de l'image
+        // ===Affichage_de_l'image===
         SDL_RenderCopy(renderer, cards[i].image, NULL, &cards[i].rect);
 
-        // Affichage de la description
+        // ===Affichage_de_la_description===
         SDL_Surface* surface = TTF_RenderText_Blended(font, cards[i].description, (SDL_Color){255, 255, 255});
         SDL_Texture* textTexture = SDL_CreateTextureFromSurface(renderer, surface);
 
@@ -89,59 +136,32 @@ void cleanUpCards(Card* cards, int numCards) {
 }
 
 
-int fenetre_acceuil(){
-    // ======================================
-    // ===Initialisatins_des_bibliothèques===
-    // ======================================
-    // ===Initialisation_de_la_fenetre===
-    if (SDL_Init(SDL_INIT_VIDEO) != 0) {
-        printf("Erreur d'initialisation de SDL: %s\n", SDL_GetError());
-        return -1;
-    }
-    // ===Initialisation_du_texte===
-    if (TTF_Init() == -1) {
-        printf("Erreur d'initialisation de SDL_ttf: %s\n", TTF_GetError());
-        SDL_Quit();
-        return -1;
+
+int fenetre_acceuil() {
+    SDL_Window* window = NULL;
+    SDL_Renderer* renderer = NULL;
+    // Initialisation de la fenêtre
+    int lg = 570;
+    int haut = 356;
+    initializeWindow("Le Snake de la Diversité", lg, haut, &window, &renderer);
+
+    if (initializeWindow("Le Snake de la Diversité", lg, haut, &window, &renderer) != 0) {
+        return -1; // Échec de l'initialisation
     }
 
-    // ==============================
-    // ===La_fenêtre_et_sa_contenu===
-    // ==============================
-    // ===La_taille===
-    int lg = 570, lag = 356; 
-    // ===La_création===
-    SDL_Window* window = SDL_CreateWindow(
-        "Le Snake de la Diversité", // ===Le_titre_de_la_fenêtre===
-        SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED,
-        lg, lag,
-        SDL_WINDOW_SHOWN
-    );
-    // ===Condition_de_la_fenêtre===
-    if (!window) {
-        TTF_Quit();
-        SDL_Quit();
-        return -1;
-    }
-    // ===Pour_que_la_fenêtre_s'affiche===
-    SDL_Renderer* renderer = SDL_CreateRenderer(window, -1, SDL_RENDERER_ACCELERATED);
-    if (!renderer) {
-        SDL_DestroyWindow(window);
-        TTF_Quit();
-        SDL_Quit();
-        return -1;
-    }
-
+    // Logique de la fenêtre d'accueil (chargement des polices, création des boutons, etc.)
     // ==============
     // ===Le_Texte===
     // ==============
     // ===On_importe_la_police===
-    TTF_Font* font = TTF_OpenFont("Fonts/stocky.ttf", 100); // L'int à la fin est sa taille
-    TTF_Font* font2 = TTF_OpenFont("Fonts/04B_30__.TTF", 20); // L'int à la fin est sa taille
-
-    // ===Gestion_des_erreurs===
-    if (!font) {
-        printf("Erreur de chargement de la police: %s\n", TTF_GetError());
+    TTF_Font* font = TTF_OpenFont("../Menu/Fonts/GrinchedRegular.ttf", 100); // L'int à la fin est sa taille 
+    TTF_Font* font2 = TTF_OpenFont("../Menu/Fonts/04B_30__.ttf", 25); // L'int à la fin est sa taille
+    if (!font || !font2) {
+        printf("Erreur de chargement des polices: %s\n", TTF_GetError());
+        if (font) TTF_CloseFont(font);
+            printf("Font 1\n");
+        if (font2) TTF_CloseFont(font2);
+            printf("Font 2\n");
         SDL_DestroyRenderer(renderer);
         SDL_DestroyWindow(window);
         TTF_Quit();
@@ -184,9 +204,9 @@ int fenetre_acceuil(){
         printf("Erreur lors du calcul de la taille du texte: %s\n", TTF_GetError());
     } else {
         textRect.x = (lg - texteLargeur) / 2;  // Centre horizontalement
-        textRect.y = (lag - texteHauteur) / 1024;  // Centre verticalement
+        textRect.y = (haut - texteHauteur) / 1024;  // Centre verticalement
         textRect.w = texteLargeur; // Largeur
-        textRect.h = texteHauteur; // Longeurç
+        textRect.h = texteHauteur; // Longeur
     }
 
     // ===================================
@@ -195,16 +215,17 @@ int fenetre_acceuil(){
     SDL_Event event;
     int running = 1;
 
-    Button play = {{100, 100, 200, 50}, "Play"}; // Position et taille originales
+    // Position_et_taille_des_boutons
+    Button play = {{100, 100, 200, 50}, "Play"}; 
     play.rect.x = 40;
-    play.rect.y = (lag - play.rect.h) / 2;
+    play.rect.y = (haut - play.rect.h) / 2;
 
     Button autre = {{100, 100, 200, 50}, "Quitter"};
     autre.rect.x = play.rect.x+300;
     autre.rect.y = play.rect.y;
 
-
     while (running) {
+        // Logique de l'événement et du rendu pour la fenêtre d'accueil
         while (SDL_PollEvent(&event)) {
             if (event.type == SDL_QUIT) {
                 running = 0;
@@ -234,67 +255,33 @@ int fenetre_acceuil(){
         // ===Pour_que_ça_s'actualise===
         SDL_RenderPresent(renderer);
     }
-    return 0;
+
+    // Nettoyage des ressources
+    destroy_window(NULL, NULL, renderer, window);
+    return 0; // Fin avec succès
 }
-// ========================================================================================================================================================
-// ========================================================================================================================================================
 
 
-// ========================================================================================================================================================
-// ========================================================================================================================================================
-int partie(){
-    // ======================================
-    // ===Initialisatins_des_bibliothèques===
-    // ======================================
-    // ===Initialisation_de_la_fenetre===
-    if (SDL_Init(SDL_INIT_VIDEO) != 0) {
-        printf("Erreur d'initialisation de SDL: %s\n", SDL_GetError());
-        return -1;
-    }
-    // ===Initialisation_du_texte===
-    if (TTF_Init() == -1) {
-        printf("Erreur d'initialisation de SDL_ttf: %s\n", TTF_GetError());
-        SDL_Quit();
-        return -1;
-    }
+int partie() {
+    SDL_Window* window = NULL;
+    SDL_Renderer* renderer = NULL;
 
-    // ==============================
-    // ===La_fenêtre_et_sa_contenu===
-    // ==============================
-    // ===La_taille===
-    int lg = 570, lag = 356; 
-    // ===La_création===
-    SDL_Window* window = SDL_CreateWindow(
-        "Le Snake de la Diversité - Choix du jeux", // ===Le_titre_de_la_fenêtre===
-        SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED,
-        lg, lag,
-        SDL_WINDOW_SHOWN
-    );
-    // ===Condition_de_la_fenêtre===
-    if (!window) {
-        TTF_Quit();
-        SDL_Quit();
-        return -1;
-    }
-    // ===Pour_que_la_fenêtre_s'affiche===
-    SDL_Renderer* renderer = SDL_CreateRenderer(window, -1, SDL_RENDERER_ACCELERATED);
-    if (!renderer) {
-        SDL_DestroyWindow(window);
-        TTF_Quit();
-        SDL_Quit();
-        return -1;
+    int lg = 570;
+    int lag = 356;
+    // Initialisation de la fenêtre
+    if (initializeWindow("Le Snake de la Diversité - Choix du jeu", lg, lag, &window, &renderer) != 0) {
+        return -1; // Échec de l'initialisation
     }
 
     // ==============
     // ===Le_Texte===
     // ==============
     // ===On_importe_la_police===
-    TTF_Font* font = TTF_OpenFont("Fonts/stocky.ttf", 100); // L'int à la fin est sa taille
-    TTF_Font* font2 = TTF_OpenFont("Fonts/04B_30__.TTF", 13); // L'int à la fin est sa taille
-
-    // ===Gestion_des_erreurs===
-    if (!font) {
-        printf("Erreur de chargement de la police: %s\n", TTF_GetError());
+    TTF_Font* font = TTF_OpenFont("../Menu/Fonts/GrinchedRegular.ttf", 100); // L'int à la fin est sa taille
+    TTF_Font* font2 = TTF_OpenFont("../Menu/Fonts/04B_30__.ttf", 13); // L'int à la fin est sa taille
+    if (!font || !font2) {
+        if (font) TTF_CloseFont(font);
+        if (font2) TTF_CloseFont(font2);
         SDL_DestroyRenderer(renderer);
         SDL_DestroyWindow(window);
         TTF_Quit();
@@ -348,6 +335,7 @@ int partie(){
     SDL_Event event;
     int running = 1;
 
+    // Position et taille des boutons
     Button nvPartie = {{100, 100, 200, 50}, "Nouvelle Partie"};
     nvPartie.rect.x = 40;
     nvPartie.rect.y = (lag - nvPartie.rect.h) / 2;
@@ -361,6 +349,7 @@ int partie(){
     retour.rect.y = charger.rect.y+100;
 
     while (running) {
+        // Logique de l'événement et du rendu pour la partie
         while (SDL_PollEvent(&event)) {
             if (event.type == SDL_QUIT) {
                 running = 0;
@@ -372,11 +361,11 @@ int partie(){
                     printf("Play !\n");
                     destroy_window(textTexture, font, renderer, window);
                     nMap();
-                    return -2; // à changer
+                    return 0; // à changer
                 }else if (isMouseOverButton(charger, x, y)) {
                     printf("Autre!\n");
                     destroy_window(textTexture, font, renderer, window);
-                    return -3; // à changer
+                    break; // à changer
                 }else if (isMouseOverButton(retour, x, y)) {
                     destroy_window(textTexture, font, renderer, window);
                     fenetre_acceuil();
@@ -396,63 +385,30 @@ int partie(){
         // ===Pour_que_ça_s'actualise===
         SDL_RenderPresent(renderer);
     }
-    return 0;
+
+    // Nettoyage des ressources
+    destroy_window(NULL, NULL, renderer, window);
+    return 0; // Fin avec succès
 }
-// ========================================================================================================================================================
-// ========================================================================================================================================================
 
 
-// ========================================================================================================================================================
-// ========================================================================================================================================================
-int nMap(){
-    // ======================================
-    // ===Initialisatins_des_bibliothèques===
-    // ======================================
-    // ===Initialisation_de_la_fenetre===
-    if (SDL_Init(SDL_INIT_VIDEO) != 0) {
-        printf("Erreur d'initialisation de SDL: %s\n", SDL_GetError());
-        return -1;
-    }
-    // ===Initialisation_du_texte===
-    if (TTF_Init() == -1) {
-        printf("Erreur d'initialisation de SDL_ttf: %s\n", TTF_GetError());
-        SDL_Quit();
-        return -1;
-    }
+int nMap() {
+    SDL_Window* window = NULL;
+    SDL_Renderer* renderer = NULL;
 
-    // ==============================
-    // ===La_fenêtre_et_sa_contenu===
-    // ==============================
-    // ===La_taille===
-    int lg = 770, lag = 556; 
-    // ===La_création===
-    SDL_Window* window = SDL_CreateWindow(
-        "Le Snake de la Diversité - Choix de la Carte", // ===Le_titre_de_la_fenêtre===
-        SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED,
-        lg, lag,
-        SDL_WINDOW_SHOWN
-    );
-    // ===Condition_de_la_fenêtre===
-    if (!window) {
-        TTF_Quit();
-        SDL_Quit();
-        return -1;
-    }
-    // ===Pour_que_la_fenêtre_s'affiche===
-    SDL_Renderer* renderer = SDL_CreateRenderer(window, -1, SDL_RENDERER_ACCELERATED);
-    if (!renderer) {
-        SDL_DestroyWindow(window);
-        TTF_Quit();
-        SDL_Quit();
-        return -1;
+    int lg = 770;
+    int lag = 556; 
+    // Initialisation de la fenêtre
+    if (initializeWindow("Le Snake de la Diversité - Choix de la Carte", lg, lag, &window, &renderer) != 0) {
+        return -1; // Échec de l'initialisation
     }
 
     // ==============
     // ===Le_Texte===
     // ==============
     // ===On_importe_la_police===
-    TTF_Font* font = TTF_OpenFont("Fonts/stocky.ttf", 100); // L'int à la fin est sa taille
-    TTF_Font* font2 = TTF_OpenFont("Fonts/04B_30__.TTF", 20); // L'int à la fin est sa taille
+    TTF_Font* font = TTF_OpenFont("../Menu/Fonts/GrinchedRegular.ttf", 100); // L'int à la fin est sa taille
+    TTF_Font* font2 = TTF_OpenFont("../Menu/Fonts/04B_30__.ttf", 20); // L'int à la fin est sa taille
 
     // ===Gestion_des_erreurs===
     if (!font) {
@@ -481,6 +437,7 @@ int nMap(){
     // ===Texture_du_texte_?===
     SDL_Texture* textTexture = SDL_CreateTextureFromSurface(renderer, textSurface);
     SDL_FreeSurface(textSurface);
+
     // ===Gestion_des_erreurs===
     if (!textTexture) {
         printf("Erreur de création de la texture de texte: %s\n", SDL_GetError());
@@ -491,6 +448,7 @@ int nMap(){
         SDL_Quit();
         return -1;
     }
+
     // ===Taille_et_position===
     SDL_Rect textRect;
     // ===Taille_du_texte===
@@ -510,6 +468,7 @@ int nMap(){
     SDL_Event event;
     int running = 1;
 
+    // ===Position_et_taille_du_bouton===
     Button retour = {{100, 100, 200, 50}, "Retour"};
     retour.rect.x = (lg - retour.rect.w) / 2;
     retour.rect.y = (lag - retour.rect.h) / 2 +250;
@@ -526,6 +485,7 @@ int nMap(){
     };
 
     while (running) {
+        // Logique de l'événement et du rendu pour nMap
         while (SDL_PollEvent(&event)) {
             if (event.type == SDL_QUIT) {
                 running = 0;
@@ -560,147 +520,8 @@ int nMap(){
         SDL_RenderPresent(renderer);
     }
 
-    // Nettoyage des ressources avant de quitter
-    SDL_DestroyTexture(textTexture);
-    cleanUpCards(cards, numCards);
-    TTF_CloseFont(font);
-    TTF_CloseFont(font2);
-    SDL_DestroyRenderer(renderer);
-    SDL_DestroyWindow(window);
-    TTF_Quit();
-    SDL_Quit();
-    return 0;
+    // Nettoyage des ressources
+    destroy_window(NULL, NULL, renderer, window);
+    return 0; // Fin avec succès
 }
 
-
-
-
-
-
-
-
-
-int gameWindow(int lg, int ht) {
-    const int GRID_SIZE = 35;
-    const int WINDOW_WIDTH = lg * GRID_SIZE;
-    const int WINDOW_HEIGHT = ht * GRID_SIZE;
-
-    if (SDL_Init(SDL_INIT_VIDEO) < 0) {
-        printf("Erreur d'initialisation de SDL: %s\n", SDL_GetError());
-        return -1;
-    }
-
-    SDL_Window *window = SDL_CreateWindow("Snake de la diversité - Game", SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, WINDOW_WIDTH, WINDOW_HEIGHT, 0);
-    if (!window) {
-        SDL_Quit();
-        return -1;
-    }
-
-    SDL_Renderer *renderer = SDL_CreateRenderer(window, -1, SDL_RENDERER_ACCELERATED);
-    if (!renderer) {
-        SDL_DestroyWindow(window);
-        SDL_Quit();
-        return -1;
-    }
-
-    if (!(IMG_Init(IMG_INIT_PNG) & IMG_INIT_PNG)) {
-        printf("Erreur d'initialisation de SDL_image: %s\n", IMG_GetError());
-        SDL_DestroyRenderer(renderer);
-        SDL_DestroyWindow(window);
-        SDL_Quit();
-        return -1;
-    }
-
-    SDL_Surface *loadedSurface = IMG_Load("Images/Japon Cool +++.png");
-    if (!loadedSurface) {
-        printf("Erreur de chargement de l'image: %s\n", IMG_GetError());
-        SDL_DestroyRenderer(renderer);
-        SDL_DestroyWindow(window);
-        IMG_Quit();
-        SDL_Quit();
-        return -1;
-    }
-
-    SDL_Texture *backgroundTexture = SDL_CreateTextureFromSurface(renderer, loadedSurface);
-    SDL_FreeSurface(loadedSurface);
-    if (!backgroundTexture) {
-        printf("Erreur de création de la texture: %s\n", SDL_GetError());
-        SDL_DestroyRenderer(renderer);
-        SDL_DestroyWindow(window);
-        IMG_Quit();
-        SDL_Quit();
-        return -1;
-    }
-
-    GridSquare square = {((WINDOW_WIDTH / 2) / GRID_SIZE) * GRID_SIZE, ((WINDOW_HEIGHT / 2) / GRID_SIZE) * GRID_SIZE};
-    SDL_Event e;
-    int quit = 0;
-
-    while (!quit) {
-        while (SDL_PollEvent(&e)) {
-            if (e.type == SDL_QUIT) {
-                quit = 1;
-            } else if (e.type == SDL_KEYDOWN) {
-                switch (e.key.keysym.sym) {
-                    case SDLK_UP:    square.y -= GRID_SIZE; break;
-                    case SDLK_DOWN:  square.y += GRID_SIZE; break;
-                    case SDLK_LEFT:  square.x -= GRID_SIZE; break;
-                    case SDLK_RIGHT: square.x += GRID_SIZE; break;
-                    case SDLK_q: quit = 1; SDL_DestroyTexture(backgroundTexture); SDL_DestroyRenderer(renderer); SDL_DestroyWindow(window); IMG_Quit(); SDL_Quit(); nMap(); break;
-                }
-
-                square.x = (square.x < 0) ? 0 : (square.x >= WINDOW_WIDTH) ? WINDOW_WIDTH - GRID_SIZE : square.x;
-                square.y = (square.y < 0) ? 0 : (square.y >= WINDOW_HEIGHT) ? WINDOW_HEIGHT - GRID_SIZE : square.y;
-            }
-        }
-
-        SDL_RenderClear(renderer);
-        SDL_RenderCopy(renderer, backgroundTexture, NULL, NULL);
-        SDL_Rect squareRect = {square.x, square.y, GRID_SIZE, GRID_SIZE};
-        SDL_SetRenderDrawColor(renderer, 255, 0, 0, 255); // Rouge
-        SDL_RenderFillRect(renderer, &squareRect);
-        SDL_RenderPresent(renderer);
-    }
-
-    SDL_DestroyTexture(backgroundTexture);
-    SDL_DestroyRenderer(renderer);
-    SDL_DestroyWindow(window);
-    IMG_Quit();
-    SDL_Quit();
-    return 0;
-}
-
-
-
-SDL_Window* CreateWindow(const char* title, int width, int height) {
-    if (SDL_Init(SDL_INIT_VIDEO) < 0) {
-        SDL_Log("Unable to initialize SDL: %s", SDL_GetError());
-        return NULL;
-    }
-
-    SDL_Window* window = SDL_CreateWindow(title,
-                                          SDL_WINDOWPOS_CENTERED,
-                                          SDL_WINDOWPOS_CENTERED,
-                                          width, height,
-                                          SDL_WINDOW_SHOWN);
-
-    if (!window) {
-        SDL_Log("Unable to create window: %s", SDL_GetError());
-        SDL_Quit();
-        return NULL;
-    }
-    SDL_Event e;
-    int quit = 1;
-    while (quit != 0) {
-        while (SDL_PollEvent(&e) != 0) {
-            if (e.type == SDL_QUIT) {
-                quit = 0;
-            }
-            // Autres gestionnaires d'événements ici
-        }
-        // Mise à jour de la logique du jeu et du rendu ici
-    }
-
-
-    return window;
-}
