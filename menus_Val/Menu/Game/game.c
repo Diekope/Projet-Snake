@@ -274,6 +274,23 @@ int gameWindow(int lg, int ht) {
         square.x = (square.x < 0) ? 0 : (square.x >= WINDOW_WIDTH) ? WINDOW_WIDTH - GRID_SIZE : square.x;
         square.y = (square.y < 0) ? 0 : (square.y >= WINDOW_HEIGHT) ? WINDOW_HEIGHT - GRID_SIZE : square.y;
 
+        for (int i = 0; i < snakeSize; i++) {
+            if (square.x == snake[i].x && square.y == snake[i].y) {
+                printf("Collision détectée ! Fin du jeu.\n");
+                quit = 1;  // Mettre fin au jeu
+                SDL_DestroyTexture(bonusTexture);
+                SDL_DestroyTexture(bodyTexture);
+                SDL_DestroyTexture(headTexture);
+                SDL_DestroyTexture(backgroundTexture);
+                SDL_DestroyRenderer(renderer);
+                SDL_DestroyWindow(window);
+                IMG_Quit();
+                SDL_Quit();
+                nMap();
+                break;
+            }
+        }
+
 
         SDL_RenderClear(renderer);
         SDL_RenderCopy(renderer, backgroundTexture, NULL, NULL);
