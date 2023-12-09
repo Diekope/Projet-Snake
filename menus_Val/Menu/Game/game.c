@@ -122,13 +122,15 @@ int gameWindow(int lg, int ht) {
     int quit = 0;
 
     
-    int moveInterval = 105; // Vitesse de déplacement, plus c'est élevé plus c'est lent
+    int moveInterval = 205; // Vitesse de déplacement, plus c'est élevé plus c'est lent
     int moveCounter = 0; // Comptage de chaque déplacement
     
     int newPos = 0;
 
-    int newX;
-    int newY;
+    // ===Initialisation du Serpent===
+    int snakeCapacity = 10; // Capacité initiale
+    int snakeSize = 0; // Taille initiale
+    GridSquare* snake = createSnake(snakeCapacity);
 
     // ===Gestion_des_évenements===
     while (!quit) {
@@ -158,6 +160,9 @@ int gameWindow(int lg, int ht) {
             int newX = square.x;
             int newY = square.y;
 
+            int oldHeadX = square.x;
+            int oldHeadY = square.y;
+
             switch (dir) {
                 case UP:    square.y -= GRID_SIZE; newY -= GRID_SIZE; break;
                 case DOWN:  square.y += GRID_SIZE; newY += GRID_SIZE; break;
@@ -165,6 +170,19 @@ int gameWindow(int lg, int ht) {
                 case RIGHT: square.x += GRID_SIZE; newX += GRID_SIZE; break;
                 case STOP:  break;
             }
+
+            for (int i = snakeSize - 1; i > 0; i--) {
+                snake[i].x = snake[i - 1].x;
+                snake[i].y = snake[i - 1].y;
+            }
+
+            // Si le serpent a un corps, le premier segment prend l'ancienne position de la tête
+            if (snakeSize > 0) {
+                snake[0].x = oldHeadX;
+                snake[0].y = oldHeadY;
+            }
+
+
             // Check if the new position is outside the window
             if (newX < 0 || newX >= WINDOW_WIDTH || newY < 0 || newY >= WINDOW_HEIGHT) {
                 printf("The square is trying to leave the window!\n");
@@ -179,11 +197,32 @@ int gameWindow(int lg, int ht) {
             }
         }
 
+        if ((square.x == bonus.x) && (square.y == bonus.y)){
+            int newX, newY;
+
+            if (snakeSize > 0) {
+                // Utilisez la position du dernier segment du serpent
+                newX = snake[snakeSize - 1].x;
+                newY = snake[snakeSize - 1].y;
+            } else {
+                // Placez le nouveau segment derrière la tête du serpent
+                switch (dir) {
+                    case UP:    newY = square.y + GRID_SIZE; newX = square.x; break;
+                    case DOWN:  newY = square.y - GRID_SIZE; newX = square.x; break;
+                    case LEFT:  newX = square.x + GRID_SIZE; newY = square.y; break;
+                    case RIGHT: newX = square.x - GRID_SIZE; newY = square.y; break;
+                    default:    newX = square.x; newY = square.y; break; // ou une autre logique par défaut
+                }
+            }
+                updateBonusPosition(&bonus, WINDOW_WIDTH / GRID_SIZE, WINDOW_HEIGHT / GRID_SIZE, GRID_SIZE);
+                createBodyPart(&snake, &snakeCapacity, &snakeSize, newX, newY);
+                newPos = 0;
+        }
         // ===Nouvelle_apparition_du_bonus===
-        if ((newPos == 5000) || ((square.x == bonus.x) && (square.y == bonus.y))) {
+        if (newPos == 5000) {
+            printf("Pos : %d\nsnek : %d, %d - Bonus : %d, %d\n", newPos, square.x, square.y, bonus.x, bonus.y);
             newPos = 0;
             updateBonusPosition(&bonus, WINDOW_WIDTH / GRID_SIZE, WINDOW_HEIGHT / GRID_SIZE, GRID_SIZE);
-
         } else {
             newPos++;
         }
@@ -203,6 +242,13 @@ int gameWindow(int lg, int ht) {
         SDL_Rect squareRect2 = {bonus.x, bonus.y, GRID_SIZE, GRID_SIZE};
         SDL_SetRenderDrawColor(renderer, 255, 255, 0, 255);
         SDL_RenderFillRect(renderer, &squareRect2);
+
+        // Afficher chaque segment du serpent
+        for (int i = 0; i < snakeSize; i++) {
+            SDL_Rect segmentRect = {snake[i].x, snake[i].y, GRID_SIZE, GRID_SIZE};
+            SDL_SetRenderDrawColor(renderer, 255, 0, 0, 255); // Rouge pour le serpent
+            SDL_RenderFillRect(renderer, &segmentRect);
+        }
 
 
         SDL_RenderPresent(renderer);
@@ -231,4 +277,54 @@ int randCo(int x) {
 void updateBonusPosition(GridSquare *bonus, int gridWidth, int gridHeight, int gridSize) {
     bonus->x = (randCo(gridWidth) * gridSize);
     bonus->y = (randCo(gridHeight) * gridSize);
+}
+
+// ================
+// ===Le_Serpent===
+// ================
+// ===Initialisation===
+GridSquare* createSnake(int initialCapacity) {
+    return malloc(initialCapacity * sizeof(GridSquare));
+}
+
+// ===Agrandissement===
+GridSquare* resizeSnake(GridSquare* list, int newCapacity) {
+    GridSquare* temp = realloc(list, newCapacity * sizeof(GridSquare));
+    return temp;
+}
+
+// ===Ajouter_d'un_élément===
+void addToSnake(GridSquare* list, int index, int x, int y, const char* name) {
+    list[index].x = x;
+    list[index].y = y;
+    snprintf(list[index].name, 10, "%s", name);
+}
+
+// ===Libéreration===
+void freeSnake(GridSquare* list) {
+    free(list);
+}
+
+// Créer et ajouter un carré à la liste avec un ID automatique
+void createBodyPart(GridSquare** list, int* capacity, int* currentSize, int x, int y) {
+    if (*currentSize >= *capacity) {
+        *capacity *= 2;
+        GridSquare* temp = resizeSnake(*list, *capacity);
+        if (temp != NULL) {
+            *list = temp;
+        } else {
+            // Gestion de l'échec de la réallocation
+            return;
+        }
+    }
+
+    // Attribuer un ID automatique basé sur currentSize
+    snprintf((*list)[*currentSize].name, 10, "q%d", *currentSize);
+
+    // Définir les coordonnées
+    (*list)[*currentSize].x = x;
+    (*list)[*currentSize].y = y;
+
+    // Incrémenter la taille actuelle de la liste
+    (*currentSize)++;
 }
