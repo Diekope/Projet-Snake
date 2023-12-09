@@ -113,6 +113,49 @@ int gameWindow(int lg, int ht) {
         SDL_Quit();
         return -1;
     }
+    // ===Texture_de_la_tête===
+    SDL_Surface* headSurface = IMG_Load("/Users/ValQuiTravaille/Desktop/TestSneke/Projet-Snake/menus_Val/Menu/Images/Eye.png");
+    if (!headSurface) {
+        printf("Erreur de chargement de l'image de la tête du serpent: %s\n", IMG_GetError());
+        // Gérer l'erreur
+    }
+
+    SDL_Texture* headTexture = SDL_CreateTextureFromSurface(renderer, headSurface);
+    SDL_FreeSurface(headSurface);  // Libérez la surface car elle n'est plus nécessaire
+    if (!headTexture) {
+        printf("Erreur de création de la texture de la tête du serpent: %s\n", SDL_GetError());
+        // Gérer l'erreur
+    }
+
+    // ===Texture_du_corps===
+    SDL_Surface* bodySurface = IMG_Load("/Users/ValQuiTravaille/Desktop/TestSneke/Projet-Snake/menus_Val/Menu/Images/Body.png");
+    if (!bodySurface) {
+        printf("Erreur de chargement de l'image du corps du serpent: %s\n", IMG_GetError());
+        // Gérer l'erreur
+    }
+
+    SDL_Texture* bodyTexture = SDL_CreateTextureFromSurface(renderer, bodySurface);
+    SDL_FreeSurface(bodySurface); // Libérez la surface car elle n'est plus nécessaire
+    if (!bodyTexture) {
+        printf("Erreur de création de la texture du corps du serpent: %s\n", SDL_GetError());
+        // Gérer l'erreur
+    }
+
+    // ===Texture_du_bonus===
+    SDL_Surface* bonusSurface = IMG_Load("/Users/ValQuiTravaille/Desktop/TestSneke/Projet-Snake/menus_Val/Menu/Images/Bonus.png");
+    if (!bonusSurface) {
+        printf("Erreur de chargement de l'image du bonus: %s\n", IMG_GetError());
+        // Gérer l'erreur
+    }
+
+    SDL_Texture* bonusTexture = SDL_CreateTextureFromSurface(renderer, bonusSurface);
+    SDL_FreeSurface(bonusSurface); // Libérez la surface car elle n'est plus nécessaire
+    if (!bonusTexture) {
+        printf("Erreur de création de la texture du bonus: %s\n", SDL_GetError());
+        // Gérer l'erreur
+    }
+
+
 
     // ===Le_serpent_et_les_bonus===
     GridSquare square = {((WINDOW_WIDTH / 2) / GRID_SIZE) * GRID_SIZE, ((WINDOW_HEIGHT / 2) / GRID_SIZE) * GRID_SIZE}; // Le serpent qui apparait au "centre" de la fenêtre
@@ -235,26 +278,27 @@ int gameWindow(int lg, int ht) {
         SDL_RenderClear(renderer);
         SDL_RenderCopy(renderer, backgroundTexture, NULL, NULL);
         // ===Player===
-        SDL_Rect squareRect = {square.x, square.y, GRID_SIZE, GRID_SIZE};
-        SDL_SetRenderDrawColor(renderer, 255, 0, 0, 255);
-        SDL_RenderFillRect(renderer, &squareRect);
+        SDL_Rect headRect = {square.x, square.y, GRID_SIZE, GRID_SIZE};
+        SDL_RenderCopy(renderer, headTexture, NULL, &headRect);
         // ===Bonus===
-        SDL_Rect squareRect2 = {bonus.x, bonus.y, GRID_SIZE, GRID_SIZE};
-        SDL_SetRenderDrawColor(renderer, 255, 255, 0, 255);
-        SDL_RenderFillRect(renderer, &squareRect2);
-
-        // Afficher chaque segment du serpent
+        // Afficher le bonus
+        SDL_Rect bonusRect = {bonus.x, bonus.y, GRID_SIZE, GRID_SIZE};
+        SDL_RenderCopy(renderer, bonusTexture, NULL, &bonusRect);
+        // Afficher chaque segment du corps du serpent
         for (int i = 0; i < snakeSize; i++) {
             SDL_Rect segmentRect = {snake[i].x, snake[i].y, GRID_SIZE, GRID_SIZE};
-            SDL_SetRenderDrawColor(renderer, 255, 0, 0, 255); // Rouge pour le serpent
-            SDL_RenderFillRect(renderer, &segmentRect);
+            SDL_RenderCopy(renderer, bodyTexture, NULL, &segmentRect);
         }
+
 
 
         SDL_RenderPresent(renderer);
     }
 
     // Nettoyage des ressources SDL
+    SDL_DestroyTexture(bonusTexture);
+    SDL_DestroyTexture(bodyTexture);
+    SDL_DestroyTexture(headTexture);
     SDL_DestroyTexture(backgroundTexture);
     SDL_DestroyRenderer(renderer);
     SDL_DestroyWindow(window);
