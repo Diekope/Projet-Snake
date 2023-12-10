@@ -47,7 +47,7 @@ SDL_Window* CreateWindow(const char* title, int width, int height) {
 // ===Les_directions_du_serpent===
 enum Direction { STOP = 0, LEFT, RIGHT, UP, DOWN };
 
-// ===Fenêtre_de_jeux===
+// ===Fenêtres_de_jeux===
 // Elle est divisée en une grille de petits carrés d'une taille changeable
 // Sa taille est donc de x carrés de longueur et h de hauteur
 // Le serpent est un carré rouge qui se déplace de carrés en carrés
@@ -177,9 +177,11 @@ int gameWindow(int lg, int ht, const char* card_name) {
 
     // ===Score===
     int score = 0;
+    int fin = 0;
 
     // ===Gestion_des_évenements===
-    while (!quit) {
+    int status;
+    while (quit == 0) {
         // ===Pour_quitter===
         while (SDL_PollEvent(&e)) {
             if (e.type == SDL_QUIT) {
@@ -193,7 +195,7 @@ int gameWindow(int lg, int ht, const char* card_name) {
                     case SDLK_DOWN:  if (lastDir != UP) dir = DOWN; break;
                     case SDLK_LEFT:  if (lastDir != RIGHT) dir = LEFT; break;
                     case SDLK_RIGHT: if (lastDir != LEFT) dir = RIGHT; break;
-                    case SDLK_q: quit = 1; SDL_DestroyTexture(backgroundTexture); SDL_DestroyRenderer(renderer); SDL_DestroyWindow(window); IMG_Quit(); SDL_Quit();nMap(); break;
+                    case SDLK_p: fin = pauseWindow(score); if (fin == 1) quit = 1, SDL_DestroyTexture(bonusTexture), SDL_DestroyTexture(bodyTexture), SDL_DestroyTexture(headTexture), SDL_DestroyTexture(backgroundTexture), SDL_DestroyRenderer(renderer), SDL_DestroyWindow(window), IMG_Quit(), SDL_Quit(), nMap(); break;
                 }
             }
         }
@@ -260,11 +262,10 @@ int gameWindow(int lg, int ht, const char* card_name) {
                     default:    newX = square.x; newY = square.y; break; // ou une autre logique par défaut
                 }
             }
-                score += 50;
+                score += 15;
                 updateBonusPosition(&bonus, WINDOW_WIDTH / GRID_SIZE, WINDOW_HEIGHT / GRID_SIZE, GRID_SIZE);
                 createBodyPart(&snake, &snakeCapacity, &snakeSize, newX, newY);
                 newPos = 0;
-                printf("Score : %d\n",score);
         }
         // ===Nouvelle_apparition_du_bonus===
         if (newPos == 5000) {
@@ -272,9 +273,8 @@ int gameWindow(int lg, int ht, const char* card_name) {
             newPos = 0;
             updateBonusPosition(&bonus, WINDOW_WIDTH / GRID_SIZE, WINDOW_HEIGHT / GRID_SIZE, GRID_SIZE);
             if(score > 0){
-                score -= 35;
+                score -= 5;
             }
-            printf("Score  %d\n",score);
         } else {
             newPos++;
         }
