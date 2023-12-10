@@ -165,7 +165,7 @@ int gameWindow(int lg, int ht, const char* card_name) {
     int quit = 0;
 
     
-    int moveInterval = 100; // Vitesse de déplacement, plus c'est élevé plus c'est lent
+    int moveInterval = 150; // Vitesse de déplacement, plus c'est élevé plus c'est lent
     int moveCounter = 0; // Comptage de chaque déplacement
     
     int newPos = 0;
@@ -174,6 +174,9 @@ int gameWindow(int lg, int ht, const char* card_name) {
     int snakeCapacity = 10; // Capacité initiale
     int snakeSize = 0; // Taille initiale
     GridSquare* snake = createSnake(snakeCapacity);
+
+    // ===Score===
+    int score = 0;
 
     // ===Gestion_des_évenements===
     while (!quit) {
@@ -235,7 +238,7 @@ int gameWindow(int lg, int ht, const char* card_name) {
                 SDL_DestroyWindow(window);
                 IMG_Quit();
                 SDL_Quit();
-                nMap();
+                lostWindow(score);
                 break;
             }
         }
@@ -257,15 +260,21 @@ int gameWindow(int lg, int ht, const char* card_name) {
                     default:    newX = square.x; newY = square.y; break; // ou une autre logique par défaut
                 }
             }
+                score += 50;
                 updateBonusPosition(&bonus, WINDOW_WIDTH / GRID_SIZE, WINDOW_HEIGHT / GRID_SIZE, GRID_SIZE);
                 createBodyPart(&snake, &snakeCapacity, &snakeSize, newX, newY);
                 newPos = 0;
+                printf("Score : %d\n",score);
         }
         // ===Nouvelle_apparition_du_bonus===
         if (newPos == 5000) {
             printf("Pos : %d\nsnek : %d, %d - Bonus : %d, %d\n", newPos, square.x, square.y, bonus.x, bonus.y);
             newPos = 0;
             updateBonusPosition(&bonus, WINDOW_WIDTH / GRID_SIZE, WINDOW_HEIGHT / GRID_SIZE, GRID_SIZE);
+            if(score > 0){
+                score -= 35;
+            }
+            printf("Score  %d\n",score);
         } else {
             newPos++;
         }
@@ -286,7 +295,7 @@ int gameWindow(int lg, int ht, const char* card_name) {
                 SDL_DestroyWindow(window);
                 IMG_Quit();
                 SDL_Quit();
-                nMap();
+                lostWindow(score);
                 break;
             }
         }
