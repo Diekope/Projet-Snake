@@ -31,6 +31,7 @@ void destroy_window(SDL_Texture* textTexture, TTF_Font* font, SDL_Renderer* rend
 int fenetre_acceuil(); // La fenetre d'acceuil
 int partie(); // Nouvelle partie ou charger partie
 int nMap(); // Choix de map en cas de nouvelle partie
+int lostWindow(int score); // Quand on a perdu, retour au menu ou quitter le jeux
 
 void drawButton(SDL_Renderer* renderer, TTF_Font* font, Button button); // Pour les boutons, on ne peut pas définir leur position dessus
 int isMouseOverButton(Button button, int mouseX, int mouseY); // Pour le clic de la souris
