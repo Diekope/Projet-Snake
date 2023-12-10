@@ -16,6 +16,7 @@ typedef struct {
 typedef struct {
     SDL_Rect rect;          // Position et dimensions de l'image de la carte
     SDL_Texture* image;     // Texture pour l'image de la carte
+    const char* card_name;  // Le nom de la carte
     const char* description; // Description de la carte
     int largeur;
     int hauteur;
