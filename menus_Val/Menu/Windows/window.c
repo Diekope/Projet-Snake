@@ -609,6 +609,178 @@ int nMap() {
     return 0; // Fin avec succès
 }
 
+int pauseWindow(int score){
+    SDL_Window* window = NULL;
+    SDL_Renderer* renderer = NULL;
+    // Initialisation de la fenêtre
+    int lg = 770;
+    int haut = 556;
+    initializeWindow("Snake de la diversité - Pause", lg, haut, &window, &renderer);
+    // ==============
+    // ===Le_Texte===
+    // ==============
+    // ===On_importe_la_police===
+    TTF_Font* font = TTF_OpenFont("../Menu/Fonts/GrinchedRegular.ttf", 100); // L'int à la fin est sa taille
+    TTF_Font* font1 = TTF_OpenFont("../Menu/Fonts/GrinchedRegular.ttf", 65); //
+    TTF_Font* font2 = TTF_OpenFont("../Menu/Fonts/04B_30__.ttf", 28); // Main Menu - Replay
+
+
+    if (!font || !font1 || !font2) {
+        printf("Erreur de création de la fonte de texte: %s\n", TTF_GetError());
+        if (font) TTF_CloseFont(font);
+        if (font1) TTF_CloseFont(font1);
+        if (font2) TTF_CloseFont(font2);
+        SDL_DestroyRenderer(renderer);
+        SDL_DestroyWindow(window);
+        TTF_Quit();
+        SDL_Quit();
+        return -1;
+    }
+
+    TTF_Font* fonts[] = {font, font1 , font2}; // Inclure toutes les polices
+    int fontCount = sizeof(fonts) / sizeof(fonts[0]);
+
+    // ===On génère le texte===    
+    SDL_Color textColor = {0, 0, 0, 255}; // Sa couleur
+    SDL_Surface* textSurface = TTF_RenderText_Solid(font, "Pause", textColor); // Le texte (fonte du texte, contenu du texte, couleur du texte))
+
+    char scoreText[50];
+    sprintf(scoreText, "Score: %d", score); // Convertir le score en texte
+    SDL_Surface* text2Surface = TTF_RenderText_Solid(font1, scoreText, textColor);
+
+
+    // ===Gestion_des_erreurs===
+    if (!textSurface || ! text2Surface) {
+        printf("Erreur de création de la surface de texte: %s\n", TTF_GetError());
+        TTF_CloseFont(font);
+        TTF_CloseFont(font1);
+        TTF_CloseFont(font2);
+        SDL_DestroyRenderer(renderer);
+        SDL_DestroyWindow(window);
+        TTF_Quit();
+        SDL_Quit();
+        return -1;
+    }
+
+    // ===Texture_du_texte_?===
+    SDL_Texture* textTexture = SDL_CreateTextureFromSurface(renderer, textSurface);
+    SDL_FreeSurface(textSurface);
+
+    SDL_Texture* subtitleTexture = SDL_CreateTextureFromSurface(renderer, text2Surface);
+    SDL_FreeSurface(text2Surface); // Libérez la surface après la création de la texture
+
+    // ===Gestion_des_erreurs===
+    if (!textTexture || !subtitleTexture) {
+        printf("Erreur de création de la texture de texte: %s\n", SDL_GetError());
+        TTF_CloseFont(font);
+        TTF_CloseFont(font1);
+        SDL_DestroyRenderer(renderer);
+        SDL_DestroyWindow(window);
+        TTF_Quit();
+        SDL_Quit();
+        return -1;
+    }
+
+    // ===Taille_et_position===
+    SDL_Rect textRect;
+    // ===Taille_du_texte===
+    int texteLargeur = 2048, texteHauteur = 1120;
+    if (TTF_SizeText(font, "Continue", &texteLargeur, &texteHauteur)) {
+        printf("Erreur lors du calcul de la taille du texte: %s\n", TTF_GetError());
+    } else {
+        textRect.x = (lg - texteLargeur) / 2;  // Centre horizontalement
+        textRect.y = (haut - texteHauteur) / 24 + 20;  // Centre verticalement
+        textRect.w = texteLargeur; // Largeur
+        textRect.h = texteHauteur; // Longeur
+    }
+
+    SDL_Rect subtitleRect;
+    int subtitleLarg = texteLargeur, subtitleHaut = texteHauteur;
+    if (TTF_SizeText(font1, "Main Menu", &subtitleLarg, &subtitleHaut)) {
+        printf("Erreur lors du calcul de la taille du texte: %s\n", TTF_GetError());
+    } else {
+        subtitleRect.x = (lg - subtitleLarg) / 2; // Centre horizontalement (en fonction de sa propre largeur)
+        subtitleRect.y = textRect.y + texteHauteur + 15; // Positionnez en dessous du titre, avec un espace de 20 pixels
+        subtitleRect.w = subtitleLarg; // Largeur
+        subtitleRect.h = subtitleHaut; // Longueur
+
+    }
+
+    SDL_Surface* backgroundImageSurface = IMG_Load("Images/Acceuil.png");
+    if (!backgroundImageSurface) {
+        printf("Erreur de chargement de l'image de fond : %s\n", IMG_GetError());
+        // Gérez l'erreur selon vos besoins
+    }
+    SDL_Texture* backgroundImageTexture = SDL_CreateTextureFromSurface(renderer, backgroundImageSurface);
+    SDL_FreeSurface(backgroundImageSurface);
+    if (!backgroundImageTexture) {
+        printf("Erreur de création de la texture de l'image de fond : %s\n", SDL_GetError());
+        // Gérez l'erreur selon vos besoins
+    }
+
+    // ===================================
+    // ===Pour_que_l'on_voie_la_fenêtre===
+    // ===================================
+    SDL_Event event;
+    int running = 1;
+
+
+    // Position et taille des boutons
+    int boutonHauteur = 100;  // Hauteur de tous les boutons (plus grande)
+    int espaceEntreBoutons = 20;  // Espace vertical entre les boutons
+
+    Button nvPartie = {{100, 100, 220, 60}, "Continuer"};
+    nvPartie.rect.x = 40;  // Ajustez cette valeur pour décaler le bouton vers la gauche
+    nvPartie.rect.y = (haut - boutonHauteur * 3 - espaceEntreBoutons * 2) / 2 + 2 * 4 * espaceEntreBoutons; // Décalage vers le bas
+
+    Button charger = {{100, 100, 220, 60}, "Quitter"};
+    charger.rect.x = 40;  // Ajustez cette valeur pour décaler le bouton vers la gauche
+    charger.rect.y = nvPartie.rect.y + boutonHauteur + espaceEntreBoutons;
+
+
+    while (running) {
+        // Logique de l'événement et du rendu pour la partie
+        while (SDL_PollEvent(&event)) {
+            if (event.type == SDL_QUIT) {
+                running = 0;
+            }
+            if (event.type == SDL_MOUSEBUTTONDOWN) {
+                int x, y;
+                SDL_GetMouseState(&x, &y);
+                if (isMouseOverButton(nvPartie, x, y)) {
+                    SDL_DestroyTexture(backgroundImageTexture);
+                    SDL_DestroyTexture(subtitleTexture);
+                    destroyWindow(textTexture, fonts, renderer, window, fontCount);
+                    return 0;
+                }else if (isMouseOverButton(charger, x, y)) {
+                    printf("Autre!\n");
+                    SDL_DestroyTexture(backgroundImageTexture);
+                    SDL_DestroyTexture(subtitleTexture);
+                    destroyWindow(textTexture, fonts, renderer, window, fontCount);
+                    return 1;
+                }
+            }
+        }
+        // ===On_efface_ce_qu'il_y_avait_précédement===
+        SDL_RenderClear(renderer);
+        // Définir le rendu du fond avec la texture de l'image
+        SDL_RenderCopy(renderer, backgroundImageTexture, NULL, NULL);
+        // ===Son_texte===
+        SDL_RenderCopy(renderer, textTexture, NULL, &textRect);
+        SDL_RenderCopy(renderer, subtitleTexture, NULL, &subtitleRect);
+        // ===Les_boutons===
+        drawButton(renderer, font2, nvPartie);
+        drawButton(renderer, font2, charger);
+        // ===Pour_que_ça_s'actualise===
+        SDL_RenderPresent(renderer);
+    }
+
+    // Nettoyage des ressources
+    destroyWindow(textTexture, fonts, renderer, window, fontCount);
+    SDL_DestroyTexture(backgroundImageTexture);
+    SDL_DestroyTexture(subtitleTexture);
+    return 0; // Fin avec succès
+}
 
 int lostWindow(int score){
     SDL_Window* window = NULL;
