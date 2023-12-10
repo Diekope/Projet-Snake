@@ -54,7 +54,7 @@ enum Direction { STOP = 0, LEFT, RIGHT, UP, DOWN };
 // Le bonus sont des carrés qui apparaissent à une position aléatoire et :
 //          Soit toutes les x intérations sont regénérés à une autre position
 //          Soit sont absorbés par le serpent et réapparaissent à une autre position (Pas encore implémenté la partie taille du serpent)
-int gameWindow(int lg, int ht) {
+int gameWindow(int lg, int ht, const char* card_name) {
     //
     const int GRID_SIZE = 35; // Taille du carré
     const int WINDOW_WIDTH = lg * GRID_SIZE; // Largeur de la fenêtre
@@ -93,7 +93,7 @@ int gameWindow(int lg, int ht) {
         return -1;
     }
 
-    SDL_Surface *loadedSurface = IMG_Load("Images/Japon Cool +++.png");
+    SDL_Surface *loadedSurface = IMG_Load(card_name);
     if (!loadedSurface) {
         printf("Erreur de chargement de l'image: %s\n", IMG_GetError());
         SDL_DestroyRenderer(renderer);
@@ -114,7 +114,7 @@ int gameWindow(int lg, int ht) {
         return -1;
     }
     // ===Texture_de_la_tête===
-    SDL_Surface* headSurface = IMG_Load("/Users/ValQuiTravaille/Desktop/TestSneke/Projet-Snake/menus_Val/Menu/Images/Eye.png");
+    SDL_Surface* headSurface = IMG_Load("Images/Eye.png");
     if (!headSurface) {
         printf("Erreur de chargement de l'image de la tête du serpent: %s\n", IMG_GetError());
         // Gérer l'erreur
@@ -128,7 +128,7 @@ int gameWindow(int lg, int ht) {
     }
 
     // ===Texture_du_corps===
-    SDL_Surface* bodySurface = IMG_Load("/Users/ValQuiTravaille/Desktop/TestSneke/Projet-Snake/menus_Val/Menu/Images/Body.png");
+    SDL_Surface* bodySurface = IMG_Load("Images/Body.png");
     if (!bodySurface) {
         printf("Erreur de chargement de l'image du corps du serpent: %s\n", IMG_GetError());
         // Gérer l'erreur
@@ -142,7 +142,7 @@ int gameWindow(int lg, int ht) {
     }
 
     // ===Texture_du_bonus===
-    SDL_Surface* bonusSurface = IMG_Load("/Users/ValQuiTravaille/Desktop/TestSneke/Projet-Snake/menus_Val/Menu/Images/Bonus.png");
+    SDL_Surface* bonusSurface = IMG_Load("Images/Bonus.png");
     if (!bonusSurface) {
         printf("Erreur de chargement de l'image du bonus: %s\n", IMG_GetError());
         // Gérer l'erreur
@@ -165,7 +165,7 @@ int gameWindow(int lg, int ht) {
     int quit = 0;
 
     
-    int moveInterval = 205; // Vitesse de déplacement, plus c'est élevé plus c'est lent
+    int moveInterval = 100; // Vitesse de déplacement, plus c'est élevé plus c'est lent
     int moveCounter = 0; // Comptage de chaque déplacement
     
     int newPos = 0;
