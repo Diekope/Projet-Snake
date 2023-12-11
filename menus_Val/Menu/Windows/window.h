@@ -18,6 +18,9 @@ typedef struct {
     SDL_Texture* image;     // Texture pour l'image de la carte
     const char* card_name;  // Le nom de la carte
     const char* description; // Description de la carte
+    const char* headSkin;   // ========
+    const char* bodySkin;   // Le Skin
+    const char* bonusSkin;  // ======== 
     int largeur;
     int hauteur;
 } Card;

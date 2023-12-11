@@ -220,7 +220,7 @@ int fenetre_acceuil() {
         textRect.h = textHeight; // Hauteur
     }
 
-    SDL_Surface* backgroundImageSurface = IMG_Load("Images/Acceuil.png");
+    SDL_Surface* backgroundImageSurface = IMG_Load("Images/Menu.png");
     if (!backgroundImageSurface) {
         printf("Erreur de chargement de l'image de fond : %s\n", IMG_GetError());
         // Gérez l'erreur selon vos besoins
@@ -377,7 +377,7 @@ int partie() {
         textRect.h = texteHauteur; // Longeur
     }
 
-    SDL_Surface* backgroundImageSurface = IMG_Load("Images/Acceuil.png");
+    SDL_Surface* backgroundImageSurface = IMG_Load("Images/Choice.png");
     if (!backgroundImageSurface) {
         printf("Erreur de chargement de l'image de fond : %s\n", IMG_GetError());
         // Gérez l'erreur selon vos besoins
@@ -559,12 +559,12 @@ int nMap() {
     // ===Le_nombre_de_Cartes===
     const int numCards = 6;
     Card cards[numCards] = {
-        {{50, 150, 110, 110}, NULL, "Images/Body.png", "Map 1", 10, 5}, // {Axe y, Axe x, Largeur, longueur}
-        {{330, 150, 110, 110}, NULL, "Images/Acceuil.png", "Map 2", 15, 9},
-        {{620, 150, 110, 110}, NULL, "Images/Body2.png", "Map 3", 20, 13},
-        {{50, 300, 110, 110}, NULL, "Images/Bonus.png", "Map 4", 25, 15},
-        {{330, 300, 110, 110}, NULL, "Images/Eye.png", "Map 5", 30, 19},
-        {{620, 300, 110, 110}, NULL, "Images/Japon Cool +++.png", "Map 6", 35, 23}
+        {{50, 150, 110, 110}, NULL, "Images/Maps/The Forest.png", "La Foret","Images/Skins/Eye.png" ,"Images/Skins/Body.png", "Images/Skins/Bonus.png", 8, 12}, // {Axe y, Axe x, Largeur, longueur}
+        {{330, 150, 110, 110}, NULL, "Images/Maps/The Ocean.png", "L'ocean","Images/Skins/Eye.png" ,"Images/Skins/Body.png", "Images/Skins/Bonus.png", 18, 13},
+        {{620, 150, 110, 110}, NULL, "Images/Maps/The City.png", "La Ville","Images/Skins/Eye.png" ,"Images/Skins/Body.png", "Images/Skins/Bonus.png", 20, 15},
+        {{50, 300, 110, 110}, NULL, "Images/Maps/Space.png", "L'espace","Images/Skins/Eye.png" ,"Images/Skins/Body.png", "Images/Skins/Bonus.png", 25, 15},
+        {{330, 300, 110, 110}, NULL, "Images/Maps/Ice World.png", "L'iceberg","Images/Skins/Eye.png" ,"Images/Skins/Body.png", "Images/Skins/Bonus.png", 30, 19},
+        {{620, 300, 110, 110}, NULL, "Images/Maps/Atomic World.png", "L'atome","Images/Skins/Eye.png" ,"Images/Skins/Body.png", "Images/Skins/Bonus.png", 35, 23}
     };
 
     while (running) {
@@ -585,7 +585,7 @@ int nMap() {
                         y >= cards[i].rect.y && y <= (cards[i].rect.y + cards[i].rect.h)) {
                         // Action lorsque la carte est cliquée
                         printf("Carte %d cliquée : %s\n", i, cards[i].description);
-                        gameWindow(cards[i].largeur, cards[i].hauteur, cards[i].card_name);
+                        gameWindow(cards[i].largeur, cards[i].hauteur, cards[i].card_name, cards[i].headSkin, cards[i].bodySkin, cards[i].bonusSkin);
                         break; // Sortir de la boucle si une carte a été cliquée
                     }
                 }
@@ -706,7 +706,7 @@ int pauseWindow(int score){
 
     }
 
-    SDL_Surface* backgroundImageSurface = IMG_Load("Images/Acceuil.png");
+    SDL_Surface* backgroundImageSurface = IMG_Load("Images/Pause.png");
     if (!backgroundImageSurface) {
         printf("Erreur de chargement de l'image de fond : %s\n", IMG_GetError());
         // Gérez l'erreur selon vos besoins
@@ -879,7 +879,7 @@ int lostWindow(int score){
 
     }
 
-    SDL_Surface* backgroundImageSurface = IMG_Load("Images/Acceuil.png");
+    SDL_Surface* backgroundImageSurface = IMG_Load("Images/Lost.png");
     if (!backgroundImageSurface) {
         printf("Erreur de chargement de l'image de fond : %s\n", IMG_GetError());
         // Gérez l'erreur selon vos besoins
