@@ -3,6 +3,7 @@
 #include <SDL_ttf.h>
 #include "game.h"
 #include "../Windows/window.h"
+#include "../Saves/save.h"
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -262,19 +263,21 @@ int gameWindow(int lg, int ht, const char* card_name, const char* headSkin, cons
                     default:    newX = square.x; newY = square.y; break; // ou une autre logique par défaut
                 }
             }
-                score += 15;
-                createBodyPart(&snake, &snakeCapacity, &snakeSize, newX, newY);
-                updateBonusPosition(&bonus, WINDOW_WIDTH / GRID_SIZE, WINDOW_HEIGHT / GRID_SIZE, GRID_SIZE);
-                // ===Si_le_bonus_apparait_dans_le_corps,_on_le_change_de_position
-                for (int i = 0; i < sizeof(snake); i++){
-                    if ((bonus.x == snake[i].x) && (bonus.y == snake[i].y)){
-                        while ((bonus.x == snake[i].x) && (bonus.y == snake[i].y)){
-                            printf("Bonus in Body\n");
-                            updateBonusPosition(&bonus, WINDOW_WIDTH / GRID_SIZE, WINDOW_HEIGHT / GRID_SIZE, GRID_SIZE);
-                        }
+
+
+            score += 15;
+            createBodyPart(&snake, &snakeCapacity, &snakeSize, newX, newY);
+            updateBonusPosition(&bonus, WINDOW_WIDTH / GRID_SIZE, WINDOW_HEIGHT / GRID_SIZE, GRID_SIZE);
+            // ===Si_le_bonus_apparait_dans_le_corps,_on_le_change_de_position
+            for (int i = 0; i < sizeof(snake); i++){
+                if ((bonus.x == snake[i].x) && (bonus.y == snake[i].y)){
+                    while ((bonus.x == snake[i].x) && (bonus.y == snake[i].y)){
+                        printf("Bonus in Body\n");
+                        updateBonusPosition(&bonus, WINDOW_WIDTH / GRID_SIZE, WINDOW_HEIGHT / GRID_SIZE, GRID_SIZE);
                     }
                 }
-                newPos = 0;
+            }
+            newPos = 0;
         }
         // ===Nouvelle_apparition_du_bonus===
         if (newPos == 5000) {
@@ -282,7 +285,7 @@ int gameWindow(int lg, int ht, const char* card_name, const char* headSkin, cons
             newPos = 0;
             updateBonusPosition(&bonus, WINDOW_WIDTH / GRID_SIZE, WINDOW_HEIGHT / GRID_SIZE, GRID_SIZE);
             for (int i = 0; i < sizeof(snake); i++){
-                printf(" X : %d, Y : %d",snake[i].x,snake[i].y);
+                printf("Same -  X : %d, Y : %d\n",snake[i].x,snake[i].y);
             }
             
             if(score > 0){
