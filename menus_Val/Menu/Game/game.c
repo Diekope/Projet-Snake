@@ -54,7 +54,7 @@ enum Direction { STOP = 0, LEFT, RIGHT, UP, DOWN };
 // Le bonus sont des carrés qui apparaissent à une position aléatoire et :
 //          Soit toutes les x intérations sont regénérés à une autre position
 //          Soit sont absorbés par le serpent et réapparaissent à une autre position (Pas encore implémenté la partie taille du serpent)
-int gameWindow(int lg, int ht, const char* card_name) {
+int gameWindow(int lg, int ht, const char* card_name, const char* headSkin, const char* bodySkin, const char* bonusSkin) {
     //
     const int GRID_SIZE = 35; // Taille du carré
     const int WINDOW_WIDTH = lg * GRID_SIZE; // Largeur de la fenêtre
@@ -114,7 +114,7 @@ int gameWindow(int lg, int ht, const char* card_name) {
         return -1;
     }
     // ===Texture_de_la_tête===
-    SDL_Surface* headSurface = IMG_Load("Images/Eye.png");
+    SDL_Surface* headSurface = IMG_Load(headSkin);
     if (!headSurface) {
         printf("Erreur de chargement de l'image de la tête du serpent: %s\n", IMG_GetError());
         // Gérer l'erreur
@@ -128,7 +128,7 @@ int gameWindow(int lg, int ht, const char* card_name) {
     }
 
     // ===Texture_du_corps===
-    SDL_Surface* bodySurface = IMG_Load("Images/Body.png");
+    SDL_Surface* bodySurface = IMG_Load(bodySkin);
     if (!bodySurface) {
         printf("Erreur de chargement de l'image du corps du serpent: %s\n", IMG_GetError());
         // Gérer l'erreur
@@ -142,7 +142,7 @@ int gameWindow(int lg, int ht, const char* card_name) {
     }
 
     // ===Texture_du_bonus===
-    SDL_Surface* bonusSurface = IMG_Load("Images/Bonus.png");
+    SDL_Surface* bonusSurface = IMG_Load(bonusSkin);
     if (!bonusSurface) {
         printf("Erreur de chargement de l'image du bonus: %s\n", IMG_GetError());
         // Gérer l'erreur
@@ -165,7 +165,7 @@ int gameWindow(int lg, int ht, const char* card_name) {
     int quit = 0;
 
     
-    int moveInterval = 150; // Vitesse de déplacement, plus c'est élevé plus c'est lent
+    int moveInterval = 20; // Vitesse de déplacement, plus c'est élevé plus c'est lent
     int moveCounter = 0; // Comptage de chaque déplacement
     
     int newPos = 0;
@@ -263,8 +263,17 @@ int gameWindow(int lg, int ht, const char* card_name) {
                 }
             }
                 score += 15;
-                updateBonusPosition(&bonus, WINDOW_WIDTH / GRID_SIZE, WINDOW_HEIGHT / GRID_SIZE, GRID_SIZE);
                 createBodyPart(&snake, &snakeCapacity, &snakeSize, newX, newY);
+                updateBonusPosition(&bonus, WINDOW_WIDTH / GRID_SIZE, WINDOW_HEIGHT / GRID_SIZE, GRID_SIZE);
+                // ===Si_le_bonus_apparait_dans_le_corps,_on_le_change_de_position
+                for (int i = 0; i < sizeof(snake); i++){
+                    if ((bonus.x == snake[i].x) && (bonus.y == snake[i].y)){
+                        while ((bonus.x == snake[i].x) && (bonus.y == snake[i].y)){
+                            printf("Bonus in Body\n");
+                            updateBonusPosition(&bonus, WINDOW_WIDTH / GRID_SIZE, WINDOW_HEIGHT / GRID_SIZE, GRID_SIZE);
+                        }
+                    }
+                }
                 newPos = 0;
         }
         // ===Nouvelle_apparition_du_bonus===
@@ -272,6 +281,10 @@ int gameWindow(int lg, int ht, const char* card_name) {
             printf("Pos : %d\nsnek : %d, %d - Bonus : %d, %d\n", newPos, square.x, square.y, bonus.x, bonus.y);
             newPos = 0;
             updateBonusPosition(&bonus, WINDOW_WIDTH / GRID_SIZE, WINDOW_HEIGHT / GRID_SIZE, GRID_SIZE);
+            for (int i = 0; i < sizeof(snake); i++){
+                printf(" X : %d, Y : %d",snake[i].x,snake[i].y);
+            }
+            
             if(score > 0){
                 score -= 5;
             }
