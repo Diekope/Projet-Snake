@@ -1,6 +1,7 @@
 #include <SDL.h>
 #include <SDL_image.h>
 #include <SDL_ttf.h>
+
 #include "window.h"
 #include "../Game/game.h"
 
@@ -204,6 +205,7 @@ int fenetre_acceuil() {
         SDL_Quit();
         return -1;
     }
+
 
     // ===Taille_et_position===
     SDL_Rect textRect;
@@ -560,7 +562,7 @@ int nMap() {
     const int numCards = 6;
     Card cards[numCards] = {
         {{50, 150, 110, 110}, NULL, "Images/Maps/The Forest.png", "La Foret","Images/Skins/Eye.png" ,"Images/Skins/Body.png", "Images/Skins/Bonus.png", 8, 12}, // {Axe y, Axe x, Largeur, longueur}
-        {{330, 150, 110, 110}, NULL, "Images/Maps/The Ocean.png", "L'ocean","Images/Skins/Eye.png" ,"Images/Skins/Body.png", "Images/Skins/Bonus.png", 18, 13},
+        {{330, 150, 110, 110}, NULL, "Images/Maps/The Ocean.png", "L'ocean","Images/Skins/Eye_o.png" ,"Images/Skins/Body_o.png", "Images/Skins/Bonus_o.png", 18, 13},
         {{620, 150, 110, 110}, NULL, "Images/Maps/The City.png", "La Ville","Images/Skins/Eye.png" ,"Images/Skins/Body.png", "Images/Skins/Bonus.png", 20, 15},
         {{50, 300, 110, 110}, NULL, "Images/Maps/Space.png", "L'espace","Images/Skins/Eye.png" ,"Images/Skins/Body.png", "Images/Skins/Bonus.png", 25, 15},
         {{330, 300, 110, 110}, NULL, "Images/Maps/Ice World.png", "L'iceberg","Images/Skins/Eye.png" ,"Images/Skins/Body.png", "Images/Skins/Bonus.png", 30, 19},
