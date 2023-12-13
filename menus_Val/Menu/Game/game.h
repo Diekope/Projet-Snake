@@ -9,13 +9,14 @@
 // ===Pour_les_fenetres_de_jeux_des_maps===
 typedef struct {
     int x, y;   // Coordonnées du segment
-    char name[10]; // Nom du segment (ex: q1, q2, ...)
+    char name[10];
 } GridSquare;
 
 typedef struct {
     GridSquare *segments; // Tableau dynamique de segments
     int length;           // Longueur actuelle du serpent
 } Snake;
+
 
 // ===Fenêtre_de_jeux===
 SDL_Window* CreateWindow(const char* title, int width, int height);

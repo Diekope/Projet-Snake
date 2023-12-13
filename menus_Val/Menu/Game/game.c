@@ -3,11 +3,11 @@
 #include <SDL_ttf.h>
 #include "game.h"
 #include "../Windows/window.h"
-#include "../Saves/save.h"
 
 #include <stdio.h>
 #include <stdlib.h>
 #include <time.h>
+#include <string.h>
 
 // ===Le_programme_va_changer_à_l'avenir===
 
@@ -157,7 +157,6 @@ int gameWindow(int lg, int ht, const char* card_name, const char* headSkin, cons
     }
 
 
-
     // ===Le_serpent_et_les_bonus===
     GridSquare square = {((WINDOW_WIDTH / 2) / GRID_SIZE) * GRID_SIZE, ((WINDOW_HEIGHT / 2) / GRID_SIZE) * GRID_SIZE}; // Le serpent qui apparait au "centre" de la fenêtre
     GridSquare bonus = {(randCo(WINDOW_WIDTH / GRID_SIZE) * GRID_SIZE), (randCo(WINDOW_HEIGHT / GRID_SIZE) * GRID_SIZE)}; // Le bonus qui apparait à une position aléatoire
@@ -166,7 +165,7 @@ int gameWindow(int lg, int ht, const char* card_name, const char* headSkin, cons
     int quit = 0;
 
     
-    int moveInterval = 20; // Vitesse de déplacement, plus c'est élevé plus c'est lent
+    int moveInterval = 140; // Vitesse de déplacement, plus c'est élevé plus c'est lent
     int moveCounter = 0; // Comptage de chaque déplacement
     
     int newPos = 0;
@@ -175,6 +174,8 @@ int gameWindow(int lg, int ht, const char* card_name, const char* headSkin, cons
     int snakeCapacity = 10; // Capacité initiale
     int snakeSize = 0; // Taille initiale
     GridSquare* snake = createSnake(snakeCapacity);
+
+    // ===Sauvegarde===
 
     // ===Score===
     int score = 0;
@@ -200,6 +201,7 @@ int gameWindow(int lg, int ht, const char* card_name, const char* headSkin, cons
                 }
             }
         }
+
 
         // ===Déplacement_automatique===
         if (moveCounter++ >= moveInterval) {
@@ -331,8 +333,6 @@ int gameWindow(int lg, int ht, const char* card_name, const char* headSkin, cons
             SDL_Rect segmentRect = {snake[i].x, snake[i].y, GRID_SIZE, GRID_SIZE};
             SDL_RenderCopy(renderer, bodyTexture, NULL, &segmentRect);
         }
-
-
 
         SDL_RenderPresent(renderer);
     }
