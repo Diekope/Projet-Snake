@@ -67,6 +67,9 @@ void destroyWindow(SDL_Texture* texture, TTF_Font* font[], SDL_Renderer* rendere
     if (window != NULL) {
         SDL_DestroyWindow(window);
     }
+
+    TTF_Quit();
+    SDL_Quit();
 }
 
 // =================
@@ -118,7 +121,7 @@ void loadAndDisplayCards(SDL_Renderer* renderer, TTF_Font* font, Card* cards, in
         SDL_RenderCopy(renderer, cards[i].image, NULL, &cards[i].rect);
 
         // ===Affichage_de_la_description===
-        SDL_Surface* surface = TTF_RenderText_Blended(font, cards[i].description, (SDL_Color){0, 0, 0});
+        SDL_Surface* surface = TTF_RenderText_Blended(font, cards[i].description, (SDL_Color){255, 255, 255});
         SDL_Texture* textTexture = SDL_CreateTextureFromSurface(renderer, surface);
 
         int textW = 0, textH = 0;
@@ -179,7 +182,7 @@ int fenetre_acceuil() {
     int fontCount = sizeof(fonts) / sizeof(fonts[0]);
 
     // ===On génère le texte===
-    SDL_Color textColor = {0, 0, 0, 255}; // Sa couleur
+    SDL_Color textColor = {255, 255, 255, 255}; // Sa couleur
     SDL_Surface* textSurface = TTF_RenderText_Solid(font, "SNAKE", textColor); // Le texte (fonte du texte, contenu du texte, couleur du texte))
 
     // ===Gestion_des_erreurs===
@@ -494,7 +497,7 @@ int nMap() {
     int fontCount = sizeof(fonts) / sizeof(fonts[0]);
 
     // ===On génère le texte===
-    SDL_Color textColor = {0, 0, 0, 255}; // Sa couleur
+    SDL_Color textColor = {255, 255, 255, 255}; // Sa couleur
     SDL_Surface* textSurface = TTF_RenderText_Solid(font, "Cartes", textColor); // Le texte (fonte du texte, contenu du texte, couleur du texte))
 
     // ===Gestion_des_erreurs===
@@ -535,7 +538,7 @@ int nMap() {
         textRect.h = texteHauteur; // Longeur
     }
 
-    SDL_Surface* backgroundImageSurface = IMG_Load("Images/Acceuil.png");
+    SDL_Surface* backgroundImageSurface = IMG_Load("Images/Maps2.png");
     if (!backgroundImageSurface) {
         printf("Erreur de chargement de l'image de fond : %s\n", IMG_GetError());
         // Gérez l'erreur selon vos besoins
@@ -561,10 +564,10 @@ int nMap() {
     // ===Le_nombre_de_Cartes===
     const int numCards = 6;
     Card cards[numCards] = {
-        {{50, 150, 110, 110}, NULL, "Images/Maps/The Forest.png", "La Foret","Images/Skins/Eye.png" ,"Images/Skins/Body.png", "Images/Skins/Bonus.png", 8, 12}, // {Axe y, Axe x, Largeur, longueur}
+        {{50, 150, 110, 110}, NULL, "Images/Maps/The Forest.png", "La Foret","Images/Skins/Eye_f.png" ,"Images/Skins/Body_f.png", "Images/Skins/Bonus_f.png", 8, 12}, // {Axe y, Axe x, Largeur, longueur}
         {{330, 150, 110, 110}, NULL, "Images/Maps/The Ocean.png", "L'ocean","Images/Skins/Eye_o.png" ,"Images/Skins/Body_o.png", "Images/Skins/Bonus_o.png", 18, 13},
-        {{620, 150, 110, 110}, NULL, "Images/Maps/The City.png", "La Ville","Images/Skins/Eye.png" ,"Images/Skins/Body.png", "Images/Skins/Bonus.png", 20, 15},
-        {{50, 300, 110, 110}, NULL, "Images/Maps/Space.png", "L'espace","Images/Skins/Eye.png" ,"Images/Skins/Body.png", "Images/Skins/Bonus.png", 25, 15},
+        {{620, 150, 110, 110}, NULL, "Images/Maps/The City.png", "La Ville","Images/Skins/Eye_c.png" ,"Images/Skins/Body_c.png", "Images/Skins/Bonus_c.png", 20, 15},
+        {{50, 300, 110, 110}, NULL, "Images/Maps/Space.png", "L'espace","Images/Skins/Eye_s.png" ,"Images/Skins/Body_s.png", "Images/Skins/Bonus_s.png", 25, 15},
         {{330, 300, 110, 110}, NULL, "Images/Maps/Ice World.png", "L'iceberg","Images/Skins/Eye.png" ,"Images/Skins/Body.png", "Images/Skins/Bonus.png", 30, 19},
         {{620, 300, 110, 110}, NULL, "Images/Maps/Atomic World.png", "L'atome","Images/Skins/Eye.png" ,"Images/Skins/Body.png", "Images/Skins/Bonus.png", 35, 23}
     };
@@ -587,6 +590,7 @@ int nMap() {
                         y >= cards[i].rect.y && y <= (cards[i].rect.y + cards[i].rect.h)) {
                         // Action lorsque la carte est cliquée
                         printf("Carte %d cliquée : %s\n", i, cards[i].description);
+                        destroyWindow(textTexture, fonts, renderer, window, fontCount);
                         gameWindow(cards[i].largeur, cards[i].hauteur, cards[i].card_name, cards[i].headSkin, cards[i].bodySkin, cards[i].bonusSkin);
                         break; // Sortir de la boucle si une carte a été cliquée
                     }
@@ -617,7 +621,9 @@ int pauseWindow(int score){
     // Initialisation de la fenêtre
     int lg = 770;
     int haut = 556;
-    initializeWindow("Snake de la diversité - Pause", lg, haut, &window, &renderer);
+    char scoreT[50];
+    sprintf(scoreT, "Pause - Score : %d", score);
+    initializeWindow(scoreT, lg, haut, &window, &renderer);
     // ==============
     // ===Le_Texte===
     // ==============
@@ -790,7 +796,9 @@ int lostWindow(int score){
     // Initialisation de la fenêtre
     int lg = 770;
     int haut = 556;
-    initializeWindow("Snake de la diversité - Perdu !", lg, haut, &window, &renderer);
+    char scoreT[50];
+    sprintf(scoreT, "Perdu ! - Score : %d", score);
+    initializeWindow(scoreT, lg, haut, &window, &renderer);
     // ==============
     // ===Le_Texte===
     // ==============
