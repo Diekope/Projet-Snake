@@ -2,9 +2,9 @@
 #include <stdlib.h>
 #include <string.h>
 #include "../header/carte.h"
-#define path "../data/map/map.txt"
+/*#define path "../data/map/map.txt"*/
 /*lire le terrain dans un fichier*/
-carte* lire_terrain(){
+carte* lire_terrain(char *path){
 	int c,l;
 	char cara;
 	FILE *file=fopen(path,"r");
@@ -14,6 +14,7 @@ carte* lire_terrain(){
 	}
 	fscanf(file,"%d",&l);
 	fscanf(file,"%d",&c);
+	fscanf(file,"%c",&cara);
 	carte *terrain=(carte *)malloc(sizeof(carte));
 	terrain->ligne=l;
 	terrain->colonne=c;
@@ -26,6 +27,9 @@ carte* lire_terrain(){
 			fscanf(file,"%c",&cara);
 			if(cara!='\n'){
 				terrain->elt[l][c]=cara;
+			}
+			else{
+				terrain->elt[l][c]='\0';
 			}
 		}
 	}
@@ -60,7 +64,7 @@ void liberer_terrain(carte *terrain){
 void afficher_terrain(carte *terrain){
 	int i,j;
 	for(i=0;i<terrain->ligne;i++){
-		for( j=0;j<=terrain->colonne;j++){
+		for( j=0;j<terrain->colonne;j++){
 		printf("%c",terrain->elt[i][j]);
 		}
 		printf("\n");
