@@ -6,84 +6,177 @@
 #include <unistd.h>
 #include <fcntl.h>
 #include "../header/jeu.h"
-#define general "data/general/info.txt"
-/* infovide: louer une espace pour stocker les informations de utilisteur : [nom_user, mdp]*/
-char **infovide(){
-	char **info=(char **)malloc(2 * sizeof(char*)); // Allocation pour deux pointeurs
-	for(int i=0;i<2;i++){
-    		info[i] = malloc(10 * sizeof(char));
-    	}
-    	return info;
+#define taille 100
+carte *recupere_carte(joueur *player){
+	carte *terrain;
+	char path_m[taille]="../data/map/";
+	printf("rep:%s\n",player->carte);
+	if(strlen(player->carte)==0){
+		printf("donnez le nom de la carte taille max :20\n");
+		scanf("%s",player->carte);
+		strcat(path_m,player->carte);
+		terrain= lire_terrain(path_m);
+		while(terrain==NULL){
+			printf("la carte n'existe pas dans data/map veuillez créer le map ou saisir un autre\n");
+			scanf("%s",player->carte);
+			char path_m[taille]="../data/map/";
+			strcat(path_m,player->carte);
+			terrain= lire_terrain(path_m);
+		}
+	}
+	else{
+		strcat(path_m,player->carte);
+		terrain= lire_terrain(path_m);
+		if(terrain ==NULL){
+			printf("carte perdu!\nveuillez recommencer une autre partie!\n");
+			char path_m[taille]="../data/map/";
+			printf("donnez le nom de la carte taille max :20\n");
+			scanf("%s",player->carte);
+			player->pas=10;
+			strcat(path_m,player->carte);
+			terrain= lire_terrain(path_m);
+			while(terrain==NULL){
+				printf("la carte n'existe pas dans data/map veuillez créer le map ou saisir un autre\n");
+				scanf("%s",player->carte);
+				char path_m[taille]="../data/map/";
+				strcat(path_m,player->carte);
+				terrain= lire_terrain(path_m);
+			}
+		}
+	}
+	return terrain;
 }
-/**/
-void libererinfo(char **info){
-	for(int i=0;i<2;i++){
-    		free(info[i]);
-    	}
-    	free(info);
+void enregistrer_joueur(joueur *player,char nom[20]){
+	char path[taille]="../data/player/";
+	strcat(path,nom);
+	FILE* fp=fopen(path,"w");
+	fwrite(player, sizeof(joueur), 1,fp);
+	fclose(fp);
+};
+joueur joueur_vide(){
+	joueur player;
+	player.score=0;
+	player.carte[0]='\0';
+	player.pas=10;
+	player.d=0;
+	player.fx=0;
+	player.fy=0;
+	player.fval=0;
+	return player;
+}
+joueur connexion(char nom[20]){
+	/*0:jeu commence normalement sinon on lire la partie*/
+	joueur player=joueur_vide();
+	char path_s[taille]="../data/sauvegarde/";
+	char path_p[taille]="../data/player/";
+	
+	printf("%s %ld\n",nom,strlen(nom));
+	strcat(path_p,nom);
+	
+	FILE* fp_joueur=fopen(path_p,"rb");
+	if(fp_joueur==NULL){
+		printf("vous etes nouveau\npasse au creation de compte\n");
+		fp_joueur=fopen(path_p,"wb");
+		printf("creation avec succé\nbienvenu %s\n",nom);
+	}
+	else{
+		fread(&player,sizeof(joueur), 1,fp_joueur);
+		printf("bonjour %s\n",nom);
+		if(strlen(player.carte)!=0){
+			int choose;
+			printf("voulez vous reprendre la partie?\n1.oui\n2.non\n");
+			scanf("%d",&choose);
+			while(choose!=1 && choose!=2){
+				printf("valeur inconnue\n1.oui\n2.non\n");
+				scanf("%d",&choose);
+			}
+			if(choose==1){
+				strcat(path_s,nom);
+				strcat(path_s,".txt");
+				fp_joueur=fopen(path_s,"r");
+				if(fp_joueur==NULL){
+					printf("memoire perdu!\nvous devez recommencer\n");
+					player.carte[0]='\0';
+					player.d=0;
+				}
+				else{
+					printf("%ld\n",strlen(player.carte));
+					printf("bien reçu\n");
+				}
+			}
+			else{
+				player.carte[0]='\0';
+				player.d=0;
+			}
+		}
+	}
+	fclose(fp_joueur);
+	return player;
+	
+	
+}
+serpent *lire_serpent(char nom[20],joueur player){
+	serpent *snake=serpentvide();
+	char path[taille]="../data/sauvegarde/";
+	if (player.d!=0){
+		strcat(path,nom);
+		strcat(path,".txt");
+		printf("%s\n",path);
+		FILE *fp=fopen(path,"r");
+		if (fp==NULL){
+			perror("fopen fichier serpent");
+		}
+		
+		snake=recup_serpent(fp,snake);
+		fclose(fp);
+		remove(path);
+	}
+	printf("touch\n");
+	return snake;
+}
+serpent *recup_serpent(FILE *fp,serpent *snake){
+	int x,y,sl;
+	int val=0;
+	int nb_noeud=1;
+	
+	if (feof(fp)){
+		printf("Fichier vide");
+	}
+	fscanf(fp,"%d",&sl);
+	for (int i=0;i<sl;i++){
+		fscanf(fp,"%d",&x);
+		fscanf(fp,"%d",&y);
+		inserer(snake,nb_noeud, val,x,y);
+		printf("x=%d y=%d\n",x,y);
+		val++;
+		nb_noeud++;
+		}
+	return snake;
 }
 
-void connexion(int *nb_partie_gagnee, int *nb_partie_gagnee_generale,char **info){
-	FILE *test=fopen(general,"r");
-	if(test==NULL){
-		printf("base general introvable\n");
-		test=fopen(general,"w");
-		fprintf(test,"%d",0);
-		printf("creation base general succès\n");
+void sauvegarde_serpent(char nom[20],serpent *snake){
+	char path[taille]="../data/sauvegarde/";
+	strcat(path,nom);
+	strcat(path,".txt");
+	FILE *fp=fopen(path,"w");
+	Noeud *actuel=snake->sentAvt;
+	fprintf(fp,"%d\n",serpentlongueur(snake));
+	while(actuel!=NULL){
+		if(estSent(actuel)==0){
+			fprintf(fp,"%d\n",actuel->x);
+			if(actuel->suiv!=NULL){
+				fprintf(fp,"%d\n",actuel->y);
+			}
+			else{
+				fprintf(fp,"%d",actuel->y);
+			}
+		};
+		actuel=actuel->suiv;
 	}
-	else{
-		fscanf(test,"%d",nb_partie_gagnee_generale);
-		printf("récupération info general avec succès\n");
-	}
-	printf("Qui vous êtes?\n");
-	scanf("%s",info[0]);
-	while(strlen(info[0])<6 || strlen(info[0])>10){
-		printf("message erreur : la longueur de votre nom ne peut pas être supérieur de 9 et inférieur de 6\nQui vous êtes?\n");
-		scanf("%s",info[0]);
-	}
-	char path_joueur[40]="data/player/";
-	strncat(path_joueur,info[0],sizeof(path_joueur) - strlen(path_joueur) - 1);
-	printf("%s\n",path_joueur);
-	test=fopen(path_joueur,"r");
-	
-	if(test==NULL){
-		printf("vous êtes nouveau.\nveuillez configurer le mot de passe de votre compte: ");
-		scanf("%s",info[1]);
-		while(strlen(info[1])<6 || strlen(info[1])>10){
-			printf("la longueur de votre mot de passe droit avoir au moins 6 et au maximum 9 caractères\nnouveau saisit:");
-			scanf("%s",info[1]);
-		}
-		test=fopen(path_joueur,"w");
-		fwrite(info[1], sizeof(char), strlen(info[1]), test);
-		fwrite(nb_partie_gagnee,sizeof(int),1,test);
-		printf("creation de compte succès\nbienvenu joueur %s\n",info[0]);
-		
-	}
-	else{
-		fscanf(test,"%d",nb_partie_gagnee);
-		fscanf(test,"%s",info[1]);
-		printf("%s\n",info[1]);
-		char test_mdp[10];
-		int chance=2;
-		printf("joueur trouvé\nentrez votre mot de passe: ");
-		scanf("%s",test_mdp);
-		while(strcmp(test_mdp,info[1])!=0 && chance>0){
-			printf("il vous reste %d chances\n",chance);
-			scanf("%s",test_mdp);
-		}
-		if(strcmp(test_mdp,info[1])==0){
-			printf("connexion succès\nbienvenu %s\n",info[0]);
-		}
-		else{
-			printf("connexion échec\n");
-		}
-		
-	
-	}
-	fclose(test);
+	fclose(fp);
 }
 /*elle genere la generation suivante*/
-Noeud* generation_suivante(carte* terrain,serpent *snake,Noeud* fruit,direction d,int *pas,int *gameover){
+Noeud* generation_suivante(carte* terrain,serpent *snake,Noeud* fruit,direction d,int *pas,int *gameover,joueur *player){
 	if(d!=init){/*si le serpent n'est pas immobile*/
 		clear(terrain);/*effacer tous les elements de la carte*/
 		Noeud *tete=iemeNoeud(snake,1);/*recupere la tête de serpent*/
@@ -112,6 +205,7 @@ Noeud* generation_suivante(carte* terrain,serpent *snake,Noeud* fruit,direction 
 				ajouter_terrain(terrain,iemeNoeud(snake,i),0);/*on dessine ce noeud dans la carte*/
 
 			}
+			player->score++;
 			inserer(snake,1,0,valeurx(fruit),valeurY(fruit));/*on insere la nouvelle tete*/
 			ajouter_terrain(terrain,iemeNoeud(snake,1),0);/*on dessine la tete*/
 			*pas=10;/*reinitialise le pas*/
@@ -148,7 +242,7 @@ Noeud* test_toucher(carte *terrain,serpent *snake){
 	int longueur=serpentlongueur(snake),colonne=nbcolonne(terrain),ligne=nbligne(terrain);
 	Noeud *tete=iemeNoeud(snake,1);
 	/*si la tete touche le mur*/
-	if(valeurx(tete)==1 || valeurx(tete)==colonne || valeurY(tete)==ligne-1 || valeurY(tete)==0){
+	if(valeurx(tete)==0 || valeurx(tete)==colonne-1 || valeurY(tete)==ligne-1 || valeurY(tete)==0){
 		return tete;/*on retourne la tete*/
 	}
 	if(longueur>1){/*si la taille de serpent >1*/
@@ -192,13 +286,24 @@ Noeud* generer_fruit(carte *terrain,serpent *snake){
 	return fruit;
 	
 }
-Noeud* initialisation(carte *terrain,serpent *snake,direction *d,int *pas){
+Noeud* initialisation(carte *terrain,serpent *snake,direction *d,int *pas,joueur player){
 	/*cas quitte normal*/
-	*pas=10;
-	int x=nbcolonne(terrain)/2,y=nbligne(terrain)/2;
-	inserer(snake,1,0,x,y);
-	ajouter_terrain(terrain,iemeNoeud(snake,1),0);
-	Noeud *fruit=generer_fruit(terrain,snake);
+	Noeud *fruit;
+	if(player.d ==0){
+		*d=init;
+		*pas=10;
+		int x=nbcolonne(terrain)/2,y=nbligne(terrain)/2;
+		inserer(snake,1,0,x,y);
+		ajouter_terrain(terrain,iemeNoeud(snake,1),0);
+		fruit=generer_fruit(terrain,snake);
+	}
+	else{
+		*pas=player.pas;
+		fruit=creerNoeud(player.fval,player.fx,player.fy, NULL);
+		ajouter_terrain(terrain,fruit,1);
+		*d=player.d;
+		
+	}
 	return fruit;
 	
 }
@@ -224,7 +329,7 @@ int kbhit(void){
 void clear(carte *terrain){
 	int x,y,ligne=nbligne(terrain),colonne=nbcolonne(terrain);
 	for(y=1;y<ligne-1;y++){
-		for(x=2;x<colonne;x++){
+		for(x=1;x<colonne-1;x++){
 			ajouterelt(terrain,x,y,' ');
 		}
 	}
@@ -248,8 +353,7 @@ void choisir_direction(direction *d,int *gameover){
 				*d=gauche;
 				break;
 			case 'q':
-				*d=init;
-				*gameover=1;
+				*gameover=2;
 				break;
 			default:
 				break;
