@@ -1,6 +1,7 @@
 #ifndef CARTE_H_INCLUDED
 #define CARTE_H_INCLUDED
 #include "liste.h"
+/*la structure pour stocker la carte*/
 typedef struct carte_{
 	int ligne;
 	int colonne;

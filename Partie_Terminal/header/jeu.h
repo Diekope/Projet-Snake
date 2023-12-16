@@ -1,6 +1,7 @@
 #ifndef JEU_H
 #define JEU_H
 #include "carte.h"
+/*choix de direction*/
 typedef enum direction_{
 	init=0,
 	haute,
@@ -9,6 +10,7 @@ typedef enum direction_{
 	droite
 	
 }direction;
+/*tous les informations de joueur*/
 typedef struct joueur_{
 	int score;
 	int pas;
