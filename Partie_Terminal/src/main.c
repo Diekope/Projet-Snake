@@ -16,15 +16,12 @@ int main(){
 	carte *terrain=recupere_carte(&player);
 	serpent *snake=lire_serpent(nom,player);
 	Noeud* fruit= initialisation(terrain,snake,&d,&pas,player);
-	/*serpent *snake=serpentvide();
-	Noeud* fruit= initialisation(terrain,snake,&d,&pas);*/
 	/*1er affichage*/
 	afficher_terrain(terrain);
-	/*si etat jeu est normal*/
 	int choix;
 	while(gameover==0){
 		while(!kbhit()){
-			if(gameover==1){
+			if(gameover==1){/*cas serpent est mort*/
 				printf("vous voulez commencer une nouvelle partie?\n1.oui\n2.non\n");
 				scanf("%d",&choix);
 				while(choix !=1 && choix!=2){
@@ -68,8 +65,8 @@ int main(){
 				}
 			}
 		}
-		choisir_direction(&d,&gameover);
-		if(gameover==2){
+		choisir_direction(&d,&gameover);/*récupère la valeur entrée*/
+		if(gameover==2){/*cas quitte avec q*/
 				switch(d){
 				 case init:
 				 	break;
@@ -96,7 +93,7 @@ int main(){
 				sauvegarde_serpent(nom,snake);
 				break;
 			}
-		if(gameover==3){
+		if(gameover==3){/*cas relancer jeu*/
 			gameover=0;
 			player.d=0;
 			libererserpent(snake);
@@ -106,7 +103,7 @@ int main(){
 			afficher_terrain(terrain);
 		}
 	}
-	
+	/*libèrer tous d'après le sauvegarde de player*/
 	enregistrer_joueur(&player,nom);
 	libererNoeud(fruit);
 	libererserpent(snake);
