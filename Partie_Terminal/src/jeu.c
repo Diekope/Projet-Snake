@@ -7,6 +7,12 @@
 #include <fcntl.h>
 #include "../header/jeu.h"
 #define taille 100
+/*lecture de la carte
+si la variable carte de la structure player est vide ->demande de en l'entrée la carte
+sinon on récupère la carte s'il existe sinon annonce erreur et demande à utilisateur de recommencer une partie et la nouvelle carte
+----------------------------------------------------------------------------------------------
+!!! précaution: les cartes devont être créées et restées dans le répertoire  ../data/map/ !!!!
+*/
 carte *recupere_carte(joueur *player){
 	carte *terrain;
 	char path_m[taille]="../data/map/";
@@ -46,6 +52,7 @@ carte *recupere_carte(joueur *player){
 	}
 	return terrain;
 }
+/*enregistrer la structure joueur dans un fichier ../data/player/nom_de_utilisateur_saisit*/
 void enregistrer_joueur(joueur *player,char nom[20]){
 	char path[taille]="../data/player/";
 	strcat(path,nom);
@@ -53,6 +60,7 @@ void enregistrer_joueur(joueur *player,char nom[20]){
 	fwrite(player, sizeof(joueur), 1,fp);
 	fclose(fp);
 };
+/*créer une structure joueur vide*/
 joueur joueur_vide(){
 	joueur player;
 	player.score=0;
@@ -64,6 +72,11 @@ joueur joueur_vide(){
 	player.fval=0;
 	return player;
 }
+/*s'il existe déjà un fichier avec nom = le nom saisit par l'utilisateur 
+alors on récupère la structure dans ce fichier et demande s'il veut reprendre la partie(s'il existe une partie
+enregistré) sinon on réinitialise player.carte en une chaine de caractère vide
+s'il n'exite pas un fichier avec nom = le nom saisit par l'utilisateur alors créer un fichier avec le nom saisit
+*/
 joueur connexion(char nom[20]){
 	/*0:jeu commence normalement sinon on lire la partie*/
 	joueur player=joueur_vide();
@@ -115,6 +128,10 @@ joueur connexion(char nom[20]){
 	
 	
 }
+/*test l'état de fichier serpent ../data/sauvegarde/nom_utilisateur_saisit.txt
+s'il existe une partie en mémoire alors on fait appel à la fonction recup_serpent
+et on supprime le fichier d'après la lecture
+*/
 serpent *lire_serpent(char nom[20],joueur player){
 	serpent *snake=serpentvide();
 	char path[taille]="../data/sauvegarde/";
@@ -134,6 +151,19 @@ serpent *lire_serpent(char nom[20],joueur player){
 	printf("touch\n");
 	return snake;
 }
+/*lire le serpent dans le fichier
+exemple de fichier serpent:
+x
+y
+x1
+y1
+.
+.
+.
+xn
+yn
+avec x et y des entiers naturels
+*/
 serpent *recup_serpent(FILE *fp,serpent *snake){
 	int x,y,sl;
 	int val=0;
@@ -153,7 +183,7 @@ serpent *recup_serpent(FILE *fp,serpent *snake){
 		}
 	return snake;
 }
-
+/*enregistrer le serpent dans un fichier ../data/sauvegarde/nom_utilisateur_saisit.txt en cas quitte avec q*/
 void sauvegarde_serpent(char nom[20],serpent *snake){
 	char path[taille]="../data/sauvegarde/";
 	strcat(path,nom);
@@ -259,6 +289,7 @@ Noeud* test_toucher(carte *terrain,serpent *snake){
 	return NULL;/*si pas touche alors NULL*/
 	
 }
+/*ajouter des choses dans le terrain*/
 void ajouter_terrain(carte* terrain,Noeud *n,int choix){
 	int x=valeurx(n),y=valeurY(n),val=contenu(n);
 	if(choix<2){
@@ -268,6 +299,7 @@ void ajouter_terrain(carte* terrain,Noeud *n,int choix){
 		ajouterelt(terrain,x,y,'*');/*sinon ajoute * */
 	}
 }
+/*générer le fruit*/
 Noeud* generer_fruit(carte *terrain,serpent *snake){
 	/*genere fruit*/
 	srand(time(NULL));
@@ -286,9 +318,11 @@ Noeud* generer_fruit(carte *terrain,serpent *snake){
 	return fruit;
 	
 }
+/*initialise le jeu*/
 Noeud* initialisation(carte *terrain,serpent *snake,direction *d,int *pas,joueur player){
 	/*cas quitte normal*/
 	Noeud *fruit;
+	/*cas normal: nouvelle partie*/
 	if(player.d ==0){
 		*d=init;
 		*pas=10;
@@ -297,7 +331,7 @@ Noeud* initialisation(carte *terrain,serpent *snake,direction *d,int *pas,joueur
 		ajouter_terrain(terrain,iemeNoeud(snake,1),0);
 		fruit=generer_fruit(terrain,snake);
 	}
-	else{
+	else{/*cas lecture: récupère la partie précédante*/
 		*pas=player.pas;
 		fruit=creerNoeud(player.fval,player.fx,player.fy, NULL);
 		ajouter_terrain(terrain,fruit,1);
@@ -307,6 +341,7 @@ Noeud* initialisation(carte *terrain,serpent *snake,direction *d,int *pas,joueur
 	return fruit;
 	
 }
+/*choisir la lettre correspond à val*/
 char alphabet(int choix, int val){
 	char *alphab="ZYXWVUTSRQPONMLKJIHGFEDCBA";
 	if(choix==0){/*choix 0 alors minuscule*/
@@ -325,7 +360,7 @@ int kbhit(void){
 	select(STDIN_FILENO+1,&fds,NULL,NULL,&intervalle_t);
 	return FD_ISSET(STDIN_FILENO,&fds);
 }
-/*efface tous t=sauf les murs*/
+/*efface tous sauf les murs*/
 void clear(carte *terrain){
 	int x,y,ligne=nbligne(terrain),colonne=nbcolonne(terrain);
 	for(y=1;y<ligne-1;y++){
