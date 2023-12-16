@@ -1,6 +1,7 @@
 #include <SDL.h>
 #include <SDL_image.h>
 #include <SDL_ttf.h>
+#include <SDL_mixer.h>
 
 #include "window.h"
 #include "../Game/game.h"
@@ -14,9 +15,8 @@
 // ===Initialisation des fenêtres===
 // ==================================
 int initializeWindow(const char* title, int width, int height, SDL_Window** outWindow, SDL_Renderer** outRenderer) {
-    if (SDL_Init(SDL_INIT_VIDEO) < 0) {
-        // ===Erreur_initialisation_SDL===
-        printf("Erreur lors de l'initialisation de SDL: %s\n", SDL_GetError());
+    if (SDL_Init(SDL_INIT_VIDEO | SDL_INIT_AUDIO) < 0) {
+        fprintf(stderr, "Erreur d'initialisation de SDL: %s\n", SDL_GetError());
         return -1;
     }
 
@@ -67,9 +67,6 @@ void destroyWindow(SDL_Texture* texture, TTF_Font* font[], SDL_Renderer* rendere
     if (window != NULL) {
         SDL_DestroyWindow(window);
     }
-
-    TTF_Quit();
-    SDL_Quit();
 }
 
 // =================
@@ -121,7 +118,7 @@ void loadAndDisplayCards(SDL_Renderer* renderer, TTF_Font* font, Card* cards, in
         SDL_RenderCopy(renderer, cards[i].image, NULL, &cards[i].rect);
 
         // ===Affichage_de_la_description===
-        SDL_Surface* surface = TTF_RenderText_Blended(font, cards[i].description, (SDL_Color){255, 255, 255});
+        SDL_Surface* surface = TTF_RenderText_Blended(font, cards[i].description, (SDL_Color){0, 0, 0});
         SDL_Texture* textTexture = SDL_CreateTextureFromSurface(renderer, surface);
 
         int textW = 0, textH = 0;
@@ -142,18 +139,49 @@ void cleanUpCards(Card* cards, int numCards) {
 }
 
 
-
 int fenetre_acceuil() {
     SDL_Window* window = NULL;
     SDL_Renderer* renderer = NULL;
     // Initialisation de la fenêtre
     int lg = 770;
     int haut = 556;
-    initializeWindow("Le Snake de la Diversité", lg, haut, &window, &renderer);
 
     if (initializeWindow("Le Snake de la Diversité", lg, haut, &window, &renderer) != 0) {
         return -1; // Échec de l'initialisation
     }
+
+    // Musique
+    // Initialiser SDL_mixer
+    if (Mix_OpenAudio(44100, MIX_DEFAULT_FORMAT, 2, 2048) < 0) {
+        fprintf(stderr, "Erreur d'initialisation de SDL_mixer: %s\n", Mix_GetError());
+        SDL_DestroyWindow(window);
+        SDL_Quit();
+        return -1;
+    }
+
+    // Charger la musique
+    Mix_Music *music = Mix_LoadMUS("Sounds/Acceuil.mp3");
+    if (!music) {
+        fprintf(stderr, "Erreur de chargement de la musique: %s\n", Mix_GetError());
+        Mix_CloseAudio();
+        SDL_DestroyWindow(window);
+        SDL_Quit();
+        return -1;
+    }
+
+    // Sounds Efects
+    Mix_Chunk *soundEffect = Mix_LoadWAV("/Users/ValQuiTravaille/Desktop/TestSneke/Projet-Snake/menus_Val/Menu/Sounds/Button.mp3");
+    if (!soundEffect) {
+        fprintf(stderr, "Erreur de chargement de l'effet sonore: %s\n", Mix_GetError());
+        // Gérer l'erreur
+    }
+
+    // Exemple de lecture de l'effet sonore
+    if (Mix_PlayChannel(-1, soundEffect, 0) == -1) {
+        fprintf(stderr, "Erreur en jouant l'effet sonore: %s\n", Mix_GetError());
+        // Gérer l'erreur
+    }
+
 
     // Logique de la fenêtre d'accueil (chargement des polices, création des boutons, etc.)
     // ==============
@@ -182,7 +210,7 @@ int fenetre_acceuil() {
     int fontCount = sizeof(fonts) / sizeof(fonts[0]);
 
     // ===On génère le texte===
-    SDL_Color textColor = {255, 255, 255, 255}; // Sa couleur
+    SDL_Color textColor = {0, 0, 0, 255}; // Sa couleur
     SDL_Surface* textSurface = TTF_RenderText_Solid(font, "SNAKE", textColor); // Le texte (fonte du texte, contenu du texte, couleur du texte))
 
     // ===Gestion_des_erreurs===
@@ -261,6 +289,11 @@ int fenetre_acceuil() {
     quitter.rect.x = lg - quitter.rect.w - 10;
     quitter.rect.y = haut - quitter.rect.h - 10; // En bas à droite
 
+
+    // Jouer la musique
+    Mix_PlayMusic(music, -1);
+
+
     while (running) {
         // Logique de l'événement et du rendu pour la fenêtre d'accueil
         while (SDL_PollEvent(&event)) {
@@ -271,18 +304,32 @@ int fenetre_acceuil() {
                 int x, y;
                 SDL_GetMouseState(&x, &y);
                 if (isMouseOverButton(play, x, y)) {
+                    Mix_PlayChannel(-1, soundEffect, 0);            // Sound effect
+                    if (Mix_PlayChannel(-1, soundEffect, 0) == -1) {
+                        fprintf(stderr, "Erreur en jouant l'effet sonore: %s\n", Mix_GetError());
+                        // Gérer l'erreur
+                    }
                     // Le bouton a été cliqué
+                    Mix_FreeMusic(music);
+                    Mix_FreeChunk(soundEffect);
+                    Mix_CloseAudio();
                     SDL_DestroyTexture(backgroundImageTexture);
                     destroyWindow(textTexture, fonts, renderer, window, fontCount);
                     partie();
                     break;
                 }else if (isMouseOverButton(credits, x, y)) {
                     // Le bouton a été cliqué
+                    Mix_FreeMusic(music);
+                    Mix_FreeChunk(soundEffect);
+                    Mix_CloseAudio();
                     destroyWindow(textTexture, fonts, renderer, window, fontCount);
                     SDL_DestroyTexture(backgroundImageTexture);
                     break;
                 }else if (isMouseOverButton(quitter, x, y)) {
                     // Le bouton a été cliqué
+                    Mix_FreeMusic(music);
+                    Mix_FreeChunk(soundEffect);
+                    Mix_CloseAudio();
                     SDL_DestroyTexture(backgroundImageTexture);
                     destroyWindow(textTexture, fonts, renderer, window, fontCount);
                     break;
@@ -304,6 +351,9 @@ int fenetre_acceuil() {
     }
 
     // Nettoyage des ressources
+    Mix_FreeMusic(music);
+    Mix_FreeChunk(soundEffect);
+    Mix_CloseAudio();
     SDL_DestroyTexture(backgroundImageTexture);
     destroyWindow(textTexture, fonts, renderer, window, fontCount);
     return 0; // Fin avec succès
@@ -497,7 +547,7 @@ int nMap() {
     int fontCount = sizeof(fonts) / sizeof(fonts[0]);
 
     // ===On génère le texte===
-    SDL_Color textColor = {255, 255, 255, 255}; // Sa couleur
+    SDL_Color textColor = {0, 0, 0, 255}; // Sa couleur
     SDL_Surface* textSurface = TTF_RenderText_Solid(font, "Cartes", textColor); // Le texte (fonte du texte, contenu du texte, couleur du texte))
 
     // ===Gestion_des_erreurs===
@@ -538,7 +588,7 @@ int nMap() {
         textRect.h = texteHauteur; // Longeur
     }
 
-    SDL_Surface* backgroundImageSurface = IMG_Load("Images/Maps2.png");
+    SDL_Surface* backgroundImageSurface = IMG_Load("Images/Acceuil.png");
     if (!backgroundImageSurface) {
         printf("Erreur de chargement de l'image de fond : %s\n", IMG_GetError());
         // Gérez l'erreur selon vos besoins
@@ -590,7 +640,6 @@ int nMap() {
                         y >= cards[i].rect.y && y <= (cards[i].rect.y + cards[i].rect.h)) {
                         // Action lorsque la carte est cliquée
                         printf("Carte %d cliquée : %s\n", i, cards[i].description);
-                        destroyWindow(textTexture, fonts, renderer, window, fontCount);
                         gameWindow(cards[i].largeur, cards[i].hauteur, cards[i].card_name, cards[i].headSkin, cards[i].bodySkin, cards[i].bonusSkin);
                         break; // Sortir de la boucle si une carte a été cliquée
                     }
@@ -621,9 +670,7 @@ int pauseWindow(int score){
     // Initialisation de la fenêtre
     int lg = 770;
     int haut = 556;
-    char scoreT[50];
-    sprintf(scoreT, "Pause - Score : %d", score);
-    initializeWindow(scoreT, lg, haut, &window, &renderer);
+    initializeWindow("Snake de la diversité - Pause", lg, haut, &window, &renderer);
     // ==============
     // ===Le_Texte===
     // ==============
@@ -796,9 +843,7 @@ int lostWindow(int score){
     // Initialisation de la fenêtre
     int lg = 770;
     int haut = 556;
-    char scoreT[50];
-    sprintf(scoreT, "Perdu ! - Score : %d", score);
-    initializeWindow(scoreT, lg, haut, &window, &renderer);
+    initializeWindow("Snake de la diversité - Perdu !", lg, haut, &window, &renderer);
     // ==============
     // ===Le_Texte===
     // ==============
