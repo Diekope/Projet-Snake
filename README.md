@@ -28,7 +28,17 @@ Ce projet contient deux versions du jeu classique Snake, développées en C. La 
 - Utilisez les touches directionnelles pour déplacer le serpent.
 - Collectez des points et évitez de heurter les murs ou la queue du serpent.
 - Essayez de battre votre meilleur score !
-
+### Précautions:
+- !!! pour la version terminal, ajoute cartes possibles mais les fichiers cartes devont restés dans le répertoire data/map!!!
+- !!! pour assurer la bonne fonctionnement de snake le fichier carte ne doit pas être vide et la carte à l'interieur faut absolument sous forme de:<br />
+l.1:  l c<br />
+l.2:  ###...#<br />
+l.3:  #     #<br />
+l  :  .     .<br />
+l  :  .     .<br />
+l  :  .     .<br />
+l.n:  ###...#<br />
+- !!! la version terminal est dédiée uniquement pour linux !!!
 ## Les Contributeurs et leurs rôles
 - **Benjamin** :
 - **Yuyu** :
