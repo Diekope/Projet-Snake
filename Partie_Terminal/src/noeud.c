@@ -55,7 +55,7 @@ void changercoord(Noeud* n,int x,int y){
 	n->x=x;
 	n->y=y;
 }
-/*changer sa valeur*/
+/*changer tous les valeurs*/
 void changerCont(Noeud *n, int val,int x,int y){
 	n->val=val;
 	n->x=x;
