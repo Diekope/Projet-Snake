@@ -165,7 +165,7 @@ int gameWindow(int lg, int ht, const char* card_name, const char* headSkin, cons
     int quit = 0;
 
     
-    int moveInterval = 140; // Vitesse de déplacement, plus c'est élevé plus c'est lent
+    int moveInterval = 300; // Vitesse de déplacement, plus c'est élevé plus c'est lent
     int moveCounter = 0; // Comptage de chaque déplacement
     
     int newPos = 0;
