@@ -14,43 +14,54 @@ Noeud* creerNoeud(int val,int x,int y, Noeud *n){
 	N->suiv=n;
 	return N;
 }
+/*libère noeud*/
 void libererNoeud(Noeud *n){
 	if(n!=NULL){
 		free(n);
 	}
 }
+/*créer sent*/
 Noeud* creerSent(){
 	Noeud *N=creerNoeud(0,0,0,NULL);
 	N->sent=1;
 	return N;
 }
+/*test si noeud est un sent*/
 int estSent(Noeud *n){
 	return (n->sent==1);
 }
+/*test si noeud as un suivant*/
 int aSuivant(Noeud *n){
 	return(n->suiv!=NULL);
 }
+/*récupère le suivant*/
 Noeud* suivant(Noeud *n){
 	return n->suiv;
 }
+/*récupère sa valeur*/
 int contenu(Noeud *n){
 	return n->val;
 }
+/*récupère sa position x*/
 int valeurx(Noeud *n){
 	return n->x;
 }
+/*récupère sa position y*/
 int valeurY(Noeud *n){
 	return n->y;
 }
+/*changer la cordonnée de noeud*/
 void changercoord(Noeud* n,int x,int y){
 	n->x=x;
 	n->y=y;
 }
+/*changer sa valeur*/
 void changerCont(Noeud *n, int val,int x,int y){
 	n->val=val;
 	n->x=x;
 	n->y=y;
 }
+/*changer le suivant de noeud n*/
 void changerSuiv(Noeud *n, Noeud *p){
 	n->suiv=p;
 }
