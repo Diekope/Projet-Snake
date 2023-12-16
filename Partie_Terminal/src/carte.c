@@ -2,8 +2,19 @@
 #include <stdlib.h>
 #include <string.h>
 #include "../header/carte.h"
-/*#define path "../data/map/map.txt"*/
-/*lire le terrain dans un fichier*/
+
+/*lire le terrain dans un fichier
+l'exemple de composition d'un fichier de la carte:
+
+l c
+##...# total c colonne et l ligne 
+#    #
+.    .
+.    .
+.    .
+##...#
+méthode de lecture: caractère par caractère
+*/
 carte* lire_terrain(char *path){
 	int c,l;
 	char cara;
