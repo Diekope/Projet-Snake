@@ -57,6 +57,7 @@ void afficherserpent(serpent *l){
 		printf("]\n");
 	}
 }
+/*récupère la longueur de serpent*/
 int serpentlongueur(serpent* l){
     int lg = 0;
     if (l == NULL){
