@@ -661,10 +661,10 @@ int nMap() {
     Card cards[numCards] = {
         {{50, 150, 110, 110}, NULL, "Images/Maps/The Forest.png", "La Foret","Images/Skins/Eye_f.png" ,"Images/Skins/Body_f.png", "Images/Skins/Bonus_f.png", "Sounds/Maps/Atom.mp3", 8, 12}, // {Axe y, Axe x, Largeur, longueur}
         {{330, 150, 110, 110}, NULL, "Images/Maps/The Ocean.png", "L'ocean","Images/Skins/Eye_o.png" ,"Images/Skins/Body_o.png", "Images/Skins/Bonus_o.png", "Sounds/Maps/Ocean.mp3", 18, 13},
-        {{620, 150, 110, 110}, NULL, "Images/Maps/The City.png", "La Ville","Images/Skins/Eye_c.png" ,"Images/Skins/Body_c.png", "Images/Skins/Bonus_c.png", "Sounds/Maps/Space.mp3", 20, 15},
-        {{50, 300, 110, 110}, NULL, "Images/Maps/Space.png", "L'espace","Images/Skins/Eye_s.png" ,"Images/Skins/Body_s.png", "Images/Skins/Bonus_s.png", "Sounds/Maps/Atom.mp3", 25, 15},
-        {{330, 300, 110, 110}, NULL, "Images/Maps/Ice World.png", "L'iceberg","Images/Skins/Eye.png" ,"Images/Skins/Body.png", "Images/Skins/Bonus.png", "Sounds/Maps/Atom.mp3", 30, 19},
-        {{620, 300, 110, 110}, NULL, "Images/Maps/Atomic World.png", "L'atome","Images/Skins/Eye.png" ,"Images/Skins/Body.png", "Images/Skins/Bonus.png", "Sounds/Maps/Atom.mp3", 35, 23}
+        {{620, 150, 110, 110}, NULL, "Images/Maps/The City.png", "La Ville","Images/Skins/Eye_c.png" ,"Images/Skins/Body_c.png", "Images/Skins/Bonus_c.png", "Sounds/Maps/Ice.mp3", 20, 15},
+        {{50, 300, 110, 110}, NULL, "Images/Maps/Space.png", "L'espace","Images/Skins/Eye_s.png" ,"Images/Skins/Body_s.png", "Images/Skins/Bonus_s.png", "Sounds/Maps/Space.mp3", 25, 15},
+        {{330, 300, 110, 110}, NULL, "Images/Maps/Ice World.png", "L'iceberg","Images/Skins/Eye.png" ,"Images/Skins/Body.png", "Images/Skins/Bonus.png", "Sounds/Maps/Ice.mp3", 30, 19},
+        {{620, 300, 110, 110}, NULL, "Images/Maps/Atomic World.png", "L'atome","Images/Skins/Eye.png" ,"Images/Skins/Body.png", "Images/Skins/Bonus.png", "Sounds/Maps/Ice.mp3", 35, 23}
     };
 
     // Jouer la musique
