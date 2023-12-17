@@ -262,14 +262,34 @@ int gameWindow(int lg, int ht, const char* card_name, const char* headSkin, cons
             if (newX < 0 || newX >= WINDOW_WIDTH || newY < 0 || newY >= WINDOW_HEIGHT) {
                 printf("The square is trying to leave the window!\n");
                 quit = 1;
-                Mix_FreeMusic(music);
-                Mix_CloseAudio();
-                SDL_DestroyTexture(backgroundTexture);
-                SDL_DestroyRenderer(renderer);
-                SDL_DestroyWindow(window);
-                IMG_Quit();
-                SDL_Quit();
-                lostWindow(score, music);
+                int perdu = lostWindow(score, music);
+                if (perdu == 1){
+                    Mix_FreeMusic(music);
+                    Mix_CloseAudio();
+                    SDL_DestroyTexture(bonusTexture);
+                    SDL_DestroyTexture(bodyTexture);
+                    SDL_DestroyTexture(headTexture);
+                    SDL_DestroyTexture(backgroundTexture);
+                    SDL_DestroyRenderer(renderer);
+                    SDL_DestroyWindow(window);
+                    IMG_Quit();
+                    SDL_Quit();
+                    nMap();
+                    return 0;
+                }else{
+                    Mix_FreeMusic(music);
+                    Mix_CloseAudio();
+                    SDL_DestroyTexture(bonusTexture);
+                    SDL_DestroyTexture(bodyTexture);
+                    SDL_DestroyTexture(headTexture);
+                    SDL_DestroyTexture(backgroundTexture);
+                    SDL_DestroyRenderer(renderer);
+                    SDL_DestroyWindow(window);
+                    IMG_Quit();
+                    SDL_Quit();
+                    fenetre_acceuil();
+                    return 0;
+                }
                 break;
             }
         }
@@ -331,17 +351,35 @@ int gameWindow(int lg, int ht, const char* card_name, const char* headSkin, cons
             if (square.x == snake[i].x && square.y == snake[i].y) {
                 printf("Collision détectée ! Fin du jeu.\n");
                 quit = 1;  // Mettre fin au jeu
-                Mix_FreeMusic(music);
-                Mix_CloseAudio();
-                SDL_DestroyTexture(bonusTexture);
-                SDL_DestroyTexture(bodyTexture);
-                SDL_DestroyTexture(headTexture);
-                SDL_DestroyTexture(backgroundTexture);
-                SDL_DestroyRenderer(renderer);
-                SDL_DestroyWindow(window);
-                IMG_Quit();
-                SDL_Quit();
-                lostWindow(score, music);
+
+                int perdu = lostWindow(score, music);
+                if (perdu == 1){
+                    Mix_FreeMusic(music);
+                    Mix_CloseAudio();
+                    SDL_DestroyTexture(bonusTexture);
+                    SDL_DestroyTexture(bodyTexture);
+                    SDL_DestroyTexture(headTexture);
+                    SDL_DestroyTexture(backgroundTexture);
+                    SDL_DestroyRenderer(renderer);
+                    SDL_DestroyWindow(window);
+                    IMG_Quit();
+                    SDL_Quit();
+                    nMap();
+                    return 0;
+                }else{
+                    Mix_FreeMusic(music);
+                    Mix_CloseAudio();
+                    SDL_DestroyTexture(bonusTexture);
+                    SDL_DestroyTexture(bodyTexture);
+                    SDL_DestroyTexture(headTexture);
+                    SDL_DestroyTexture(backgroundTexture);
+                    SDL_DestroyRenderer(renderer);
+                    SDL_DestroyWindow(window);
+                    IMG_Quit();
+                    SDL_Quit();
+                    fenetre_acceuil();
+                    return 0;
+                }
                 break;
             }
         }

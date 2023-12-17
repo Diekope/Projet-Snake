@@ -871,6 +871,9 @@ int pauseWindow(int score, Mix_Music *music){
                     SDL_DestroyTexture(backgroundImageTexture);
                     SDL_DestroyTexture(subtitleTexture);
                     destroyWindow(textTexture, fonts, renderer, window, fontCount);
+                    Mix_FreeMusic(music);
+                    Mix_CloseAudio();
+                    partie();
                     return 1;
                 }
             }
@@ -899,9 +902,6 @@ int pauseWindow(int score, Mix_Music *music){
 }
 
 int lostWindow(int score, Mix_Music *music){
-    if(music == NULL){
-        printf("erreur\n");
-    }
     SDL_Window* window = NULL;
     SDL_Renderer* renderer = NULL;
     // Initialisation de la fenêtre
@@ -1043,12 +1043,12 @@ int lostWindow(int score, Mix_Music *music){
                     printf("Play !\n");
                     destroyWindow(textTexture, fonts, renderer, window, fontCount);
                     nMap();
-                    break;
+                    return 1;
                 }else if (isMouseOverButton(charger, x, y)) {
                     printf("Autre!\n");
                     destroyWindow(textTexture, fonts, renderer, window, fontCount);
                     fenetre_acceuil();
-                    break; // à changer
+                    return 0;
                 }
             }
         }
@@ -1067,6 +1067,8 @@ int lostWindow(int score, Mix_Music *music){
     }
 
     // Nettoyage des ressources
+    Mix_FreeMusic(music);
+    Mix_CloseAudio();
     destroyWindow(textTexture, fonts, renderer, window, fontCount);
     SDL_DestroyTexture(backgroundImageTexture);
     SDL_DestroyTexture(subtitleTexture);
