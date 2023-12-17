@@ -217,10 +217,10 @@ int gameWindow(int lg, int ht, const char* card_name, const char* headSkin, cons
                 // ===Lettre_q_pour_quitter===
                 // ===On_ne_peut_pas_retourner_directement_sur_ses_pas===
                 switch (e.key.keysym.sym) {
-                    case SDLK_UP:    if (lastDir != DOWN) dir = UP; break;
-                    case SDLK_DOWN:  if (lastDir != UP) dir = DOWN; break;
-                    case SDLK_LEFT:  if (lastDir != RIGHT) dir = LEFT; break;
-                    case SDLK_RIGHT: if (lastDir != LEFT) dir = RIGHT; break;
+                    case SDLK_o:    if (lastDir != DOWN) dir = UP; break;
+                    case SDLK_l:  if (lastDir != UP) dir = DOWN; break;
+                    case SDLK_k:  if (lastDir != RIGHT) dir = LEFT; break;
+                    case SDLK_m: if (lastDir != LEFT) dir = RIGHT; break;
                     case SDLK_p: fin = pauseWindow(score, music); if (fin == 1) quit = 1, SDL_DestroyTexture(bonusTexture), SDL_DestroyTexture(bodyTexture), SDL_DestroyTexture(headTexture), SDL_DestroyTexture(backgroundTexture), SDL_DestroyRenderer(renderer), SDL_DestroyWindow(window),Mix_FreeMusic(music), Mix_CloseAudio(), IMG_Quit(), SDL_Quit(), nMap(); break;
                 }
             }
