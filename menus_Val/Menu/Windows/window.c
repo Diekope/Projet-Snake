@@ -10,7 +10,6 @@
 #include <stdlib.h>
 #include <unistd.h>
 
-
 // ==================================
 // ===Initialisation des fenêtres===
 // ==================================
@@ -237,7 +236,6 @@ int fenetre_acceuil() {
         return -1;
     }
 
-
     // ===Taille_et_position===
     SDL_Rect textRect;
     int textWidth, textHeight;
@@ -304,19 +302,11 @@ int fenetre_acceuil() {
                 int x, y;
                 SDL_GetMouseState(&x, &y);
                 if (isMouseOverButton(play, x, y)) {
-                    Mix_PlayChannel(-1, soundEffect, 0);            // Sound effect
-                    if (Mix_PlayChannel(-1, soundEffect, 0) == -1) {
-                        fprintf(stderr, "Erreur en jouant l'effet sonore: %s\n", Mix_GetError());
-                        // Gérer l'erreur
-                    }
                     // Le bouton a été cliqué
-                    Mix_FreeMusic(music);
-                    Mix_FreeChunk(soundEffect);
-                    Mix_CloseAudio();
                     SDL_DestroyTexture(backgroundImageTexture);
                     destroyWindow(textTexture, fonts, renderer, window, fontCount);
                     partie();
-                    break;
+                    return 1;
                 }else if (isMouseOverButton(credits, x, y)) {
                     // Le bouton a été cliqué
                     Mix_FreeMusic(music);
@@ -369,6 +359,38 @@ int partie() {
     // Initialisation de la fenêtre
     if (initializeWindow("Le Snake de la Diversité - Choix du jeu", lg, lag, &window, &renderer) != 0) {
         return -1; // Échec de l'initialisation
+    }
+
+    // Musique
+    // Initialiser SDL_mixer
+    if (Mix_OpenAudio(44100, MIX_DEFAULT_FORMAT, 2, 2048) < 0) {
+        fprintf(stderr, "Erreur d'initialisation de SDL_mixer: %s\n", Mix_GetError());
+        SDL_DestroyWindow(window);
+        SDL_Quit();
+        return -1;
+    }
+
+    // Charger la musique
+    Mix_Music *music = Mix_LoadMUS("Sounds/Acceuil.mp3");
+    if (!music) {
+        fprintf(stderr, "Erreur de chargement de la musique: %s\n", Mix_GetError());
+        Mix_CloseAudio();
+        SDL_DestroyWindow(window);
+        SDL_Quit();
+        return -1;
+    }
+
+    // Sounds Efects
+    Mix_Chunk *soundEffect = Mix_LoadWAV("/Users/ValQuiTravaille/Desktop/TestSneke/Projet-Snake/menus_Val/Menu/Sounds/Button.mp3");
+    if (!soundEffect) {
+        fprintf(stderr, "Erreur de chargement de l'effet sonore: %s\n", Mix_GetError());
+        // Gérer l'erreur
+    }
+
+    // Exemple de lecture de l'effet sonore
+    if (Mix_PlayChannel(-1, soundEffect, 0) == -1) {
+        fprintf(stderr, "Erreur en jouant l'effet sonore: %s\n", Mix_GetError());
+        // Gérer l'erreur
     }
 
     // ==============
@@ -575,6 +597,29 @@ int nMap() {
         return -1;
     }
 
+    // Charger la musique
+    Mix_Music *music = Mix_LoadMUS("Sounds/test.wav");
+    if (!music) {
+        fprintf(stderr, "Erreur de chargement de la musique: %s\n", Mix_GetError());
+        Mix_CloseAudio();
+        SDL_DestroyWindow(window);
+        SDL_Quit();
+        return -1;
+    }
+
+    // Sounds Efects
+    Mix_Chunk *soundEffect = Mix_LoadWAV("Sounds/Button.mp3");
+    if (!soundEffect) {
+        fprintf(stderr, "Erreur de chargement de l'effet sonore: %s\n", Mix_GetError());
+        // Gérer l'erreur
+    }
+
+    // Exemple de lecture de l'effet sonore
+    if (Mix_PlayChannel(-1, soundEffect, 0) == -1) {
+        fprintf(stderr, "Erreur en jouant l'effet sonore: %s\n", Mix_GetError());
+        // Gérer l'erreur
+    }
+
     // ===Taille_et_position===
     SDL_Rect textRect;
     // ===Taille_du_texte===
@@ -588,7 +633,7 @@ int nMap() {
         textRect.h = texteHauteur; // Longeur
     }
 
-    SDL_Surface* backgroundImageSurface = IMG_Load("Images/Acceuil.png");
+    SDL_Surface* backgroundImageSurface = IMG_Load("Images/Maps.png");
     if (!backgroundImageSurface) {
         printf("Erreur de chargement de l'image de fond : %s\n", IMG_GetError());
         // Gérez l'erreur selon vos besoins
@@ -614,13 +659,16 @@ int nMap() {
     // ===Le_nombre_de_Cartes===
     const int numCards = 6;
     Card cards[numCards] = {
-        {{50, 150, 110, 110}, NULL, "Images/Maps/The Forest.png", "La Foret","Images/Skins/Eye_f.png" ,"Images/Skins/Body_f.png", "Images/Skins/Bonus_f.png", 8, 12}, // {Axe y, Axe x, Largeur, longueur}
-        {{330, 150, 110, 110}, NULL, "Images/Maps/The Ocean.png", "L'ocean","Images/Skins/Eye_o.png" ,"Images/Skins/Body_o.png", "Images/Skins/Bonus_o.png", 18, 13},
-        {{620, 150, 110, 110}, NULL, "Images/Maps/The City.png", "La Ville","Images/Skins/Eye_c.png" ,"Images/Skins/Body_c.png", "Images/Skins/Bonus_c.png", 20, 15},
-        {{50, 300, 110, 110}, NULL, "Images/Maps/Space.png", "L'espace","Images/Skins/Eye_s.png" ,"Images/Skins/Body_s.png", "Images/Skins/Bonus_s.png", 25, 15},
-        {{330, 300, 110, 110}, NULL, "Images/Maps/Ice World.png", "L'iceberg","Images/Skins/Eye.png" ,"Images/Skins/Body.png", "Images/Skins/Bonus.png", 30, 19},
-        {{620, 300, 110, 110}, NULL, "Images/Maps/Atomic World.png", "L'atome","Images/Skins/Eye.png" ,"Images/Skins/Body.png", "Images/Skins/Bonus.png", 35, 23}
+        {{50, 150, 110, 110}, NULL, "Images/Maps/The Forest.png", "La Foret","Images/Skins/Eye_f.png" ,"Images/Skins/Body_f.png", "Images/Skins/Bonus_f.png", "Sounds/Maps/Atom.mp3", 8, 12}, // {Axe y, Axe x, Largeur, longueur}
+        {{330, 150, 110, 110}, NULL, "Images/Maps/The Ocean.png", "L'ocean","Images/Skins/Eye_o.png" ,"Images/Skins/Body_o.png", "Images/Skins/Bonus_o.png", "Sounds/Maps/Ocean.mp3", 18, 13},
+        {{620, 150, 110, 110}, NULL, "Images/Maps/The City.png", "La Ville","Images/Skins/Eye_c.png" ,"Images/Skins/Body_c.png", "Images/Skins/Bonus_c.png", "Sounds/Maps/Space.mp3", 20, 15},
+        {{50, 300, 110, 110}, NULL, "Images/Maps/Space.png", "L'espace","Images/Skins/Eye_s.png" ,"Images/Skins/Body_s.png", "Images/Skins/Bonus_s.png", "Sounds/Maps/Atom.mp3", 25, 15},
+        {{330, 300, 110, 110}, NULL, "Images/Maps/Ice World.png", "L'iceberg","Images/Skins/Eye.png" ,"Images/Skins/Body.png", "Images/Skins/Bonus.png", "Sounds/Maps/Atom.mp3", 30, 19},
+        {{620, 300, 110, 110}, NULL, "Images/Maps/Atomic World.png", "L'atome","Images/Skins/Eye.png" ,"Images/Skins/Body.png", "Images/Skins/Bonus.png", "Sounds/Maps/Atom.mp3", 35, 23}
     };
+
+    // Jouer la musique
+    Mix_PlayMusic(music, -1);
 
     while (running) {
         // Logique de l'événement et du rendu pour nMap
@@ -632,6 +680,9 @@ int nMap() {
                 SDL_GetMouseState(&x, &y);
                 if (isMouseOverButton(retour, x, y)) {
                     destroyWindow(textTexture, fonts, renderer, window, fontCount);
+                    Mix_FreeMusic(music);
+                    Mix_FreeChunk(soundEffect);
+                    Mix_CloseAudio();
                     partie();
                 }
                 // Vérifier si le clic est sur une carte
@@ -640,7 +691,11 @@ int nMap() {
                         y >= cards[i].rect.y && y <= (cards[i].rect.y + cards[i].rect.h)) {
                         // Action lorsque la carte est cliquée
                         printf("Carte %d cliquée : %s\n", i, cards[i].description);
-                        gameWindow(cards[i].largeur, cards[i].hauteur, cards[i].card_name, cards[i].headSkin, cards[i].bodySkin, cards[i].bonusSkin);
+                        destroyWindow(textTexture, fonts, renderer, window, fontCount);
+                        Mix_FreeMusic(music);
+                        Mix_FreeChunk(soundEffect);
+                        Mix_CloseAudio();
+                        gameWindow(cards[i].largeur, cards[i].hauteur, cards[i].card_name, cards[i].headSkin, cards[i].bodySkin, cards[i].bonusSkin, cards[i].song);
                         break; // Sortir de la boucle si une carte a été cliquée
                     }
                 }
@@ -660,11 +715,15 @@ int nMap() {
     }
 
     // Nettoyage des ressources
+    // Nettoyage des ressources
+    Mix_FreeMusic(music);
+    Mix_FreeChunk(soundEffect);
+    Mix_CloseAudio();
     destroyWindow(textTexture, fonts, renderer, window, fontCount);
     return 0; // Fin avec succès
 }
 
-int pauseWindow(int score){
+int pauseWindow(int score, Mix_Music *music){
     SDL_Window* window = NULL;
     SDL_Renderer* renderer = NULL;
     // Initialisation de la fenêtre
@@ -831,13 +890,18 @@ int pauseWindow(int score){
     }
 
     // Nettoyage des ressources
+    Mix_FreeMusic(music);
+    Mix_CloseAudio();
     destroyWindow(textTexture, fonts, renderer, window, fontCount);
     SDL_DestroyTexture(backgroundImageTexture);
     SDL_DestroyTexture(subtitleTexture);
     return 0; // Fin avec succès
 }
 
-int lostWindow(int score){
+int lostWindow(int score, Mix_Music *music){
+    if(music == NULL){
+        printf("erreur\n");
+    }
     SDL_Window* window = NULL;
     SDL_Renderer* renderer = NULL;
     // Initialisation de la fenêtre
