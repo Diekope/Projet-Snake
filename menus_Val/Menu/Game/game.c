@@ -1,6 +1,7 @@
 #include <SDL.h>
 #include <SDL_image.h>
 #include <SDL_ttf.h>
+#include <SDL_mixer.h>
 #include "game.h"
 #include "../Windows/window.h"
 
@@ -55,7 +56,7 @@ enum Direction { STOP = 0, LEFT, RIGHT, UP, DOWN };
 // Le bonus sont des carrés qui apparaissent à une position aléatoire et :
 //          Soit toutes les x intérations sont regénérés à une autre position
 //          Soit sont absorbés par le serpent et réapparaissent à une autre position (Pas encore implémenté la partie taille du serpent)
-int gameWindow(int lg, int ht, const char* card_name, const char* headSkin, const char* bodySkin, const char* bonusSkin) {
+int gameWindow(int lg, int ht, const char* card_name, const char* headSkin, const char* bodySkin, const char* bonusSkin, const char* song) {
     //
     const int GRID_SIZE = 35; // Taille du carré
     const int WINDOW_WIDTH = lg * GRID_SIZE; // Largeur de la fenêtre
@@ -68,8 +69,8 @@ int gameWindow(int lg, int ht, const char* card_name, const char* headSkin, cons
     // =======================
     // Initialisations de base
     // =======================
-    if (SDL_Init(SDL_INIT_VIDEO) < 0) {
-        printf("Erreur d'initialisation de SDL: %s\n", SDL_GetError());
+    if (SDL_Init(SDL_INIT_VIDEO | SDL_INIT_AUDIO) < 0) {
+        fprintf(stderr, "Erreur d'initialisation de SDL: %s\n", SDL_GetError());
         return -1;
     }
 
@@ -114,6 +115,26 @@ int gameWindow(int lg, int ht, const char* card_name, const char* headSkin, cons
         SDL_Quit();
         return -1;
     }
+
+    // Musique
+    // Initialiser SDL_mixer
+    if (Mix_OpenAudio(44100, MIX_DEFAULT_FORMAT, 2, 2048) < 0) {
+        fprintf(stderr, "Erreur d'initialisation de SDL_mixer: %s\n", Mix_GetError());
+        SDL_DestroyWindow(window);
+        SDL_Quit();
+        return -1;
+    }
+
+    // Charger la musique
+    Mix_Music *music = Mix_LoadMUS(song);
+    if (!music) {
+        fprintf(stderr, "Erreur de chargement de la musique: %s\n", Mix_GetError());
+        Mix_CloseAudio();
+        SDL_DestroyWindow(window);
+        SDL_Quit();
+        return -1;
+    }
+
     // ===Texture_de_la_tête===
     SDL_Surface* headSurface = IMG_Load(headSkin);
     if (!headSurface) {
@@ -181,6 +202,9 @@ int gameWindow(int lg, int ht, const char* card_name, const char* headSkin, cons
     int score = 0;
     int fin = 0;
 
+    // ===La_musique
+    Mix_PlayMusic(music, -1);
+
     // ===Gestion_des_évenements===
     int status;
     while (quit == 0) {
@@ -197,7 +221,7 @@ int gameWindow(int lg, int ht, const char* card_name, const char* headSkin, cons
                     case SDLK_DOWN:  if (lastDir != UP) dir = DOWN; break;
                     case SDLK_LEFT:  if (lastDir != RIGHT) dir = LEFT; break;
                     case SDLK_RIGHT: if (lastDir != LEFT) dir = RIGHT; break;
-                    case SDLK_p: fin = pauseWindow(score); if (fin == 1) quit = 1, SDL_DestroyTexture(bonusTexture), SDL_DestroyTexture(bodyTexture), SDL_DestroyTexture(headTexture), SDL_DestroyTexture(backgroundTexture), SDL_DestroyRenderer(renderer), SDL_DestroyWindow(window), IMG_Quit(), SDL_Quit(), nMap(); break;
+                    case SDLK_p: fin = pauseWindow(score, music); if (fin == 1) quit = 1, SDL_DestroyTexture(bonusTexture), SDL_DestroyTexture(bodyTexture), SDL_DestroyTexture(headTexture), SDL_DestroyTexture(backgroundTexture), SDL_DestroyRenderer(renderer), SDL_DestroyWindow(window),Mix_FreeMusic(music), Mix_CloseAudio(), IMG_Quit(), SDL_Quit(), nMap(); break;
                 }
             }
         }
@@ -238,12 +262,14 @@ int gameWindow(int lg, int ht, const char* card_name, const char* headSkin, cons
             if (newX < 0 || newX >= WINDOW_WIDTH || newY < 0 || newY >= WINDOW_HEIGHT) {
                 printf("The square is trying to leave the window!\n");
                 quit = 1;
+                Mix_FreeMusic(music);
+                Mix_CloseAudio();
                 SDL_DestroyTexture(backgroundTexture);
                 SDL_DestroyRenderer(renderer);
                 SDL_DestroyWindow(window);
                 IMG_Quit();
                 SDL_Quit();
-                lostWindow(score);
+                lostWindow(score, music);
                 break;
             }
         }
@@ -305,6 +331,8 @@ int gameWindow(int lg, int ht, const char* card_name, const char* headSkin, cons
             if (square.x == snake[i].x && square.y == snake[i].y) {
                 printf("Collision détectée ! Fin du jeu.\n");
                 quit = 1;  // Mettre fin au jeu
+                Mix_FreeMusic(music);
+                Mix_CloseAudio();
                 SDL_DestroyTexture(bonusTexture);
                 SDL_DestroyTexture(bodyTexture);
                 SDL_DestroyTexture(headTexture);
@@ -313,7 +341,7 @@ int gameWindow(int lg, int ht, const char* card_name, const char* headSkin, cons
                 SDL_DestroyWindow(window);
                 IMG_Quit();
                 SDL_Quit();
-                lostWindow(score);
+                lostWindow(score, music);
                 break;
             }
         }
@@ -338,6 +366,8 @@ int gameWindow(int lg, int ht, const char* card_name, const char* headSkin, cons
     }
 
     // Nettoyage des ressources SDL
+    Mix_FreeMusic(music);
+    Mix_CloseAudio();
     SDL_DestroyTexture(bonusTexture);
     SDL_DestroyTexture(bodyTexture);
     SDL_DestroyTexture(headTexture);

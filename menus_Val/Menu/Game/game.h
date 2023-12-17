@@ -20,7 +20,7 @@ typedef struct {
 
 // ===Fenêtre_de_jeux===
 SDL_Window* CreateWindow(const char* title, int width, int height);
-int gameWindow(int lg, int ht, const char* card_name, const char* headSkin, const char* bodySkin, const char* bonusSkin);
+int gameWindow(int lg, int ht, const char* card_name, const char* headSkin, const char* bodySkin, const char* bonusSkin, const char* song);
 
 // ===Bonus===
 void initializeRandom();
