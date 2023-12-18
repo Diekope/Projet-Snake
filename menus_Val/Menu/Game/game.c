@@ -221,7 +221,7 @@ int gameWindow(int lg, int ht, const char* card_name, const char* headSkin, cons
                     case SDLK_l:  if (lastDir != UP) dir = DOWN; break;
                     case SDLK_k:  if (lastDir != RIGHT) dir = LEFT; break;
                     case SDLK_m: if (lastDir != LEFT) dir = RIGHT; break;
-                    case SDLK_p: fin = pauseWindow(score, music); if (fin == 1) quit = 1, SDL_DestroyTexture(bonusTexture), SDL_DestroyTexture(bodyTexture), SDL_DestroyTexture(headTexture), SDL_DestroyTexture(backgroundTexture), SDL_DestroyRenderer(renderer), SDL_DestroyWindow(window),Mix_FreeMusic(music), Mix_CloseAudio(), IMG_Quit(), SDL_Quit(), nMap(); break;
+                    case SDLK_p: fin = pauseWindow(score, music); if (fin == 1) quit = 1, SDL_DestroyTexture(bonusTexture), SDL_DestroyTexture(bodyTexture), SDL_DestroyTexture(headTexture), SDL_DestroyTexture(backgroundTexture), SDL_DestroyRenderer(renderer), SDL_DestroyWindow(window), nMap(); break;
                 }
             }
         }
@@ -262,6 +262,12 @@ int gameWindow(int lg, int ht, const char* card_name, const char* headSkin, cons
             if (newX < 0 || newX >= WINDOW_WIDTH || newY < 0 || newY >= WINDOW_HEIGHT) {
                 printf("The square is trying to leave the window!\n");
                 quit = 1;
+                SDL_DestroyTexture(bonusTexture);
+                SDL_DestroyTexture(bodyTexture);
+                SDL_DestroyTexture(headTexture);
+                SDL_DestroyTexture(backgroundTexture);
+                SDL_DestroyRenderer(renderer);
+                SDL_DestroyWindow(window);
                 int perdu = lostWindow(score, music);
                 if (perdu == 1){
                     Mix_FreeMusic(music);
