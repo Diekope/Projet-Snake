@@ -668,7 +668,7 @@ int nMap() {
     };
 
     // Jouer la musique
-    Mix_PlayMusic(music, -1);
+    Mix_PlayMusic(music, 5);
 
     while (running) {
         // Logique de l'événement et du rendu pour nMap
